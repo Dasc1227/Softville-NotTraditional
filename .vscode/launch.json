@@ -12,6 +12,9 @@
             "args": [
                 "runserver"
             ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/calendville"
+            },
             "django": true
         }
     ]
