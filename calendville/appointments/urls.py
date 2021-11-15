@@ -1,6 +1,6 @@
 from django.urls import path
 
-from calendar import views
+from appointments import views
 
 urlpatterns = [
     path('index', views.index, name="index")
