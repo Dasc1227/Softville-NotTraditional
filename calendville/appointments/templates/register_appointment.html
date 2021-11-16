@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+        <div class="row">
+            <h2>Registrar Cita</h2>
+        </div>
+        <hr>
+        <form>
+            <div class="form-group">
+                <div class="row item-group">
+                    <div class="col-sm-3">
+                        <label for="labelDate">Fecha de la Cita</label>
+                        <input type="date" class="form-control" id="labelDate" placeholder="12/09/2020" >
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="labelTime">Hora de la Cita</label>
+                        <input type="datetime" class="form-control" id="labelTime" placeholder="12:00">
+                    </div>
+                </div>
+            </div>
+            <div class="row item-group">
+                <div class="col-sm-3">
+                    <label for="labelProfessional">Profesional Encargado</label>
+                    <input type="text" class="form-control" id="labelProfessional" placeholder="Dr...">
+                </div>
+                <div class="col-sm-3">
+                    <label for="labelName">Nombre del Paciente</label>
+                    <input type="text" class="form-control" id="labelName" placeholder="Sr. Alex...">
+                </div>
+            </div>
+            <div class="row item-group">
+                <div class="col-sm-3">
+                    <label for="labelRegister">Nombre del que registra</label>
+                    <input type="text" class="form-control" id="labelRegister" placeholder="...">
+                </div>
+                <div class="col-sm-3">
+                    <label for="labelName">Estado de la Cita</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                        <option>Pendiente</option>
+                        <option>Asistió</option>
+                        <option>No se presentó</option>
+                        <option>Cancelada</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row item-group">
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
+                </div>
+            </div>
+        </form>
+
+{% endblock %}
