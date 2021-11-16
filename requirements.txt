@@ -5,7 +5,7 @@ coverage==6.1.2
 distlib==0.3.3
 Django==3.2.9
 filelock==3.3.2
-flake8==4.0.1
+flake8==3.9.2
 importlib-metadata==4.2.0
 importlib-resources==5.4.0
 iniconfig==1.1.1

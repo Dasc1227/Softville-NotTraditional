@@ -42,5 +42,3 @@ def logout_view(request):
 
 def register_appointment(request):
     return render(request, "register_appointment.html")
-
-
