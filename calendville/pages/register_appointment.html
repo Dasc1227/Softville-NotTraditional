@@ -2,9 +2,65 @@
     <head>
 		<title>Registrar Cita</title>
 		<meta charset="utf-8">
-	</head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="../styles/styles.css">
+    </head>
     <body>
-        <h1>Registrar Cita</h1>
-        <hr>
+        <nav class="navbar navbar-group">
+            <div class="container-fluid">
+              <span class="navbar-brand mb-0 h1">Calendville</span>
+            </div>
+          </nav>
+        <div class="container">
+            <div class="row">
+                <h2>Registrar Cita</h2>
+            </div>
+            <hr>        
+            <form>
+                <div class="form-group">
+                    <div class="row item-group">
+                        <div class="col-sm-3">
+                            <label for="labelDate">Fecha de la Cita</label>
+                            <input type="date" class="form-control" id="dateHolder" placeholder="12/09/2020" >
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="labelTime">Hora de la Cita</label>
+                            <input type="datetime" class="form-control" id="timeHolder" placeholder="12:00">
+                        </div>
+                    </div>
+                </div>
+                <div class="row item-group">
+                    <div class="col-sm-3">
+                        <label for="labelProfessional">Profesional Encargado</label>
+                        <input type="text" class="form-control" id="proHolder" placeholder="Dr...">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="labelName">Nombre del Paciente</label>
+                        <input type="text" class="form-control" id="NameHolder" placeholder="Sr. Alex...">
+                    </div>
+                </div>
+                <div class="row item-group">
+                    <div class="col-sm-3">
+                        <label for="labelRegister">Nombre del que registra</label>
+                        <input type="text" class="form-control" id="proHolder" placeholder="...">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="labelName">Estado de la Cita</label>
+                        <select class="form-control" id="exampleFormControlSelect1">
+                            <option>Pendiente</option>
+                            <option>Asistió</option>
+                            <option>No se presentó</option>
+                            <option>Cancelada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row item-group">
+                    <div class="col-sm-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </body>
 </html>
