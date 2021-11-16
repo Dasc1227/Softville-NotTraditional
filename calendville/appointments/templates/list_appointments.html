@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div>
+    {% for appointments_day in appointments_week %}
+        <div class="card mb-3">
+            <div class="card-header">
+                {{appointments_day.day}}
+            </div>
+            {% if not appointments_day.appointments %}
+                <div class="card-body">
+                    No hay citas
+                </div>
+            {% else %}
+                {% for appointment in appointments_day.appointments %}
+                    <div class="card-body border-bottom">
+                        <h5 class="card-title">
+                            <strong>Paciente: </strong>
+                            {{appointment.patient_id.name}} {{appointment.patient_id.last_name}}
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>Fecha: </strong><span>{{ appointment.start_time }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Profesional: </strong><span>{{appointment.attended_by.name}} {{appointment.attended_by.last_name}}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>Registrada por: </strong><span>{{appointment.registered_by.name}} {{appointment.registered_by.last_name}}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
