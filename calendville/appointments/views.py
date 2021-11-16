@@ -2,9 +2,12 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-
-# Create your views here.
 from django.urls import reverse
+
+from datetime import date
+from datetime import timedelta
+
+from appointments.models import Appointment
 
 
 def index(request):
@@ -44,3 +47,21 @@ def register_appointment(request):
     return render(request, "register_appointment.html")
 
 
+@login_required(login_url='/login')
+def list_appointments(request):
+    start_date = date.today()
+
+    # Appointments for the next 7 days
+    appointments_week = [
+        {
+            "day": (start_date + timedelta(days=day)),
+            "appointments": Appointment.objects.filter(
+                start_time__date=(start_date + timedelta(days=day))
+            ).order_by('start_time')
+        }
+        for day in range(0, 7)
+    ]
+
+    return render(request, "list_appointments.html", {
+        "appointments_week": appointments_week,
+    })
