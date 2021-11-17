@@ -12,7 +12,7 @@
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.GET.next }}" />
         <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Usuario">
+            <input autofocus class="form-control" type="text" name="username" placeholder="Correo">
         </div>
         <div class="form-group">
             <input class="form-control" type="password" name="password" placeholder="Contraseña">
