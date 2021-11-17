@@ -1,9 +1,12 @@
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models.deletion import CASCADE
-
+from appointments.managers import WorkerManager
 
 # See the following link for id lengths and types:
 # https://help.hulipractice.com/es/articles/1348413-ingresar-informacion-de-emisores-solo-para-costa-rica
+
 
 class Patient(models.Model):
     id_number = models.CharField(primary_key=True, max_length=10)
@@ -12,27 +15,40 @@ class Patient(models.Model):
     email = models.EmailField(max_length=254, unique=True)
 
 
-class Worker(models.Model):
+class Worker(AbstractBaseUser, PermissionsMixin):
     PHYSICAL = "PH"
     JURIDICAL = "JU"
     NITE = "NI"
     DIMEX = "DM"
+    HEALTH_PROFFESIONAL = "HP"
+    SECRETARY = "SE"
     ID_TYPES = [
         (PHYSICAL, 'Física'),
         (JURIDICAL, 'Jurídica'),
         (NITE, 'Número de Identificación Tributario Especial'),
         (DIMEX, 'Documento de Identifcación de Migración y Extrangería')
     ]
-    id_number = models.CharField(primary_key=True, max_length=12)
+    ROLE_TYPES = [
+        (HEALTH_PROFFESIONAL, 'Doctor'),
+        (SECRETARY, 'Secretaria')
+    ]
+    email = models.EmailField(primary_key=True, max_length=254,
+                              unique=True, null=False)
+    id_number = models.CharField(unique=True, max_length=12)
     id_type = models.CharField(max_length=2, choices=ID_TYPES,
                                default=PHYSICAL)
-    name = models.CharField(max_length=50, null=False)
+    first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=100, null=False)
-    email = models.EmailField(max_length=254, unique=True, null=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     # Adding password size as a placeholder, see
     # https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#password-hashing-algorithms
-    password = models.CharField(max_length=32, null=False)
     password_attempts = models.PositiveSmallIntegerField(default=0, null=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = WorkerManager()
 
     @classmethod
     def get_sentinel_worker(cls):
@@ -44,6 +60,9 @@ class Worker(models.Model):
             password=""
         )
         return worker.id_number
+
+    def __str__(self):
+        return self.email
 
 
 class Appointment(models.Model):
