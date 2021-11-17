@@ -7,37 +7,43 @@
             <h2>Registrar Cita</h2>
         </div>
         <hr>
-        <form>
+        <form  id="form_register_appointment" action="{% url 'register_appointment' %}" method="post">
             <div class="form-group">
                 <div class="row item-group">
                     <div class="col-sm-3">
                         <label for="labelDate">Fecha de la Cita</label>
-                        <input type="date" class="form-control" id="labelDate" placeholder="12/09/2020" required >
+                        <input type="date" class="form-control" id="inputDate" name = "inputDate" placeholder="12/09/2020" required >
                     </div>
                     <div class="col-sm-3">
                         <label for="labelTime">Hora de la Cita</label>
-                        <input type="datetime" class="form-control" id="labelTime" placeholder="12:00" required>
+                        <input type="datetime" class="form-control" id="inputTime" name="inputTime" placeholder="12:00" required>
                     </div>
+                </div>
+            </div>
+            <div class="row item-group">
+                <div class="col-sm-3">
+                    <label for="labelLastName">Apellido del Paciente</label>
+                    <input type="text" class="form-control" id="inputLastName" name="inputName" placeholder="Sr. Alex..." required>
+                </div>
+                <div class="col-sm-3">
+                    <label for="labelName">Nombre del Paciente</label>
+                    <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Sr. Alex..." required>
                 </div>
             </div>
             <div class="row item-group">
                 <div class="col-sm-3">
                     <label for="labelProfessional">Profesional Encargado</label>
-                    <input type="text" class="form-control" id="labelProfessional" placeholder="Dr..." required>
+                    <input type="text" class="form-control" id="inputProfessional"  name = "inputProfessional" placeholder="Dr..." required>
                 </div>
                 <div class="col-sm-3">
-                    <label for="labelName">Nombre del Paciente</label>
-                    <input type="text" class="form-control" id="labelName" placeholder="Sr. Alex..." required>
+                    <label for="labelRegister">Nombre del que registra</label>
+                    <input type="text" class="form-control" id="inputRegister" name ="inputRegister" placeholder="..." required>
                 </div>
             </div>
             <div class="row item-group">
                 <div class="col-sm-3">
-                    <label for="labelRegister">Nombre del que registra</label>
-                    <input type="text" class="form-control" id="labelRegister" placeholder="..." required>
-                </div>
-                <div class="col-sm-3">
                     <label for="labelName">Estado de la Cita</label>
-                    <select class="form-control" id="exampleFormControlSelect1" required>
+                    <select class="form-control" id="status" required name="status" >
                         <option>Pendiente</option>
                         <option>Asistió</option>
                         <option>No se presentó</option>
