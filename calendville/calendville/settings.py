@@ -87,20 +87,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': ('django.contrib.auth.password_validation.'
-                 'UserAttributeSimilarityValidator'),
+        'NAME': ('appointments.validators.'
+                 'LengthPasswordValidator'),
     },
     {
-        'NAME': ('django.contrib.auth.password_validation.'
-                 'MinimumLengthValidator'),
+        'NAME': ('appointments.validators.'
+                 'ContainsNumberPasswordValidator'),
     },
     {
-        'NAME': ('django.contrib.auth.password_validation.'
-                 'CommonPasswordValidator'),
+        'NAME': ('appointments.validators.'
+                 'ContainsUpperCaseLetterPasswordValidator'),
     },
     {
-        'NAME': ('django.contrib.auth.password_validation.'
-                 'NumericPasswordValidator'),
+        'NAME': ('appointments.validators.'
+                 'ContainsSymbolPasswordValidator'),
     },
 ]
 
@@ -128,3 +128,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'appointments.Worker'
