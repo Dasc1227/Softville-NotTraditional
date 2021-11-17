@@ -7,7 +7,7 @@ from django.urls import reverse
 from datetime import date
 from datetime import timedelta
 
-from appointments.models import Appointment
+from appointments.models import Appointment, Worker
 
 
 def index(request):
@@ -15,12 +15,13 @@ def index(request):
 
 
 def login_view(request):
+    context = {}
     if request.method == "POST":
 
         # Attempt to sign user in
-        username = request.POST["username"]
+        email = request.POST["email"]
         password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=email, password=password)
 
         # Check if authentication is successful
         if user is not None:
@@ -30,9 +31,23 @@ def login_view(request):
             else:
                 return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "login.html", {
-                "message": "Invalid username and/or password."
-            })
+            user = Worker.objects.get(email=email)
+            if user is not None:
+                # Check if user is blocked
+                if user.password_attempts >= 5:
+                    user.is_active = False
+                # Else, increment password attempts
+                else:
+                    context["error"] = "Contraseña inválida."
+                    user.password_attempts += 1
+                user.save()
+
+                context["user_blocked"] = user.is_active
+                context["login_attempts"] = 5 - user.password_attempts
+            else:
+                context["error"] = "El correo no existe en el sistema."
+
+            return render(request, "login.html", context)
     else:
         return render(request, "login.html")
 

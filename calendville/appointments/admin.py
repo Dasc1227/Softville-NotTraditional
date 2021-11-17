@@ -11,10 +11,18 @@ class WorkerAdmin(UserAdmin):
     """Define admin model for custom User model with no username field."""
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('id_number', 'id_type',
-                                         'first_name', 'last_name')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions')}),
+        (_('Personal info'), {
+            'fields':
+                (
+                    'id_number', 'id_type', 'first_name', 'last_name'
+                )}),
+        (_('Permissions'), {
+            'fields':
+                (
+                    'is_active', 'is_staff', 'is_superuser',
+                    'password_attempts', 'groups',
+                    'user_permissions'
+                )}),
     )
     add_fieldsets = (
         (None, {
