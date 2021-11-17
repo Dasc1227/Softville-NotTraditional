@@ -9,7 +9,7 @@ class LengthPasswordValidator:
         self.max_length = max_length
 
     def validate(self, password, user=None):
-        if self.min_length > len(password) > self.max_length:
+        if self.min_length > len(password) or len(password) > self.max_length:
             raise forms.ValidationError(
                 f"La contraseña debe tener entre {self.min_length}"
                 f" y {self.max_length} caracteres.")
@@ -22,7 +22,9 @@ class LengthPasswordValidator:
 class ContainsUpperCaseLetterPasswordValidator:
 
     def validate(self, password, user=None):
-        if not any(letter.isupper() for letter in password):
+        SYMBOL_PATTERN = '(.*[A-Z].*)'
+        regex = re.compile(SYMBOL_PATTERN)
+        if not regex.search(password):
             raise forms.ValidationError(
                 "La contraseña debe tener al menos una mayúscula."
             )
@@ -34,7 +36,9 @@ class ContainsUpperCaseLetterPasswordValidator:
 class ContainsNumberPasswordValidator:
 
     def validate(self, password, user=None):
-        if not any(letter.isdigit() for letter in password):
+        NUMBER_PATTERN = "(?=.*\\d)"
+        regex = re.compile(NUMBER_PATTERN)
+        if not regex.search(password):
             raise forms.ValidationError(
                 "La contraseña debe tener al menos un número."
             )
@@ -46,8 +50,9 @@ class ContainsNumberPasswordValidator:
 class ContainsSymbolPasswordValidator:
 
     def validate(self, password, user=None):
-        check_symbol = re.compile('[@_!#$%^&*()<>?/}{~:]')
-        if not check_symbol.search(password):
+        SYMBOL_PATTERN = '[@_!#$%^&*()<>?/}{~:]'
+        regex = re.compile(SYMBOL_PATTERN)
+        if not regex.search(password):
             raise forms.ValidationError(
                 "La contraseña debe tener al menos un símbolo "
                 "(!,@,#,$,%,&,*,<,>,(),~,:,?,/,|,{,})."
