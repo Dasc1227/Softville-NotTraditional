@@ -46,7 +46,7 @@ class Worker(AbstractBaseUser, PermissionsMixin):
     password_attempts = models.PositiveSmallIntegerField(default=0, null=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['id_number']
 
     objects = WorkerManager()
 
