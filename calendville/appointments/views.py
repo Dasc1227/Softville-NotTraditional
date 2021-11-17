@@ -59,19 +59,28 @@ def logout_view(request):
 
 
 def register_appointment(request):
+    context = {}
+    context['workers'] = Worker.objects.all()
     if request.method == "POST":
         date = request.POST["inputDate"]
         time = request.POST["inputTime"]
-        professional = request.POST["inputProfessional"]
-        pacient_name = request.POST["inputName"]
-        pacient_name = request.POST["inputLastName"]
+        professional_lastName = request.POST["inputProfessionalLastName"]
+        professional_Name = request.POST["inputProfessionalName"]
+        patient_name = request.POST["inputName"]
+        patient_LastName = request.POST["inputLastName"]
         appointment_status = request.POST["status"]
         register = request.POST["inputRegister"]
+        pacient , created = Patient.objects.get_or_create(
+            id_number="0000000000",
+            name=patient_name,
+            last_name=patient_LastName,
+            email="",
+        )
+        register = request.user.id
+        worker = Worker.get()
 
-        pacient = Pacient.objects.get(last_name=pacient_name)
 
-
-    return render(request, "register_appointment.html")
+    return render(request, "register_appointment.html", context)
 
 
 @login_required(login_url='/login')

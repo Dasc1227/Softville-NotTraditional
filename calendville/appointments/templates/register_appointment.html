@@ -23,7 +23,7 @@
             <div class="row item-group">
                 <div class="col-sm-3">
                     <label for="labelLastName">Apellido del Paciente</label>
-                    <input type="text" class="form-control" id="inputLastName" name="inputName" placeholder="Sr. Alex..." required>
+                    <input type="text" class="form-control" id="inputLastName" name="inputLastName" placeholder="Sr. Alex..." required>
                 </div>
                 <div class="col-sm-3">
                     <label for="labelName">Nombre del Paciente</label>
@@ -32,15 +32,23 @@
             </div>
             <div class="row item-group">
                 <div class="col-sm-3">
-                    <label for="labelProfessional">Profesional Encargado</label>
-                    <input type="text" class="form-control" id="inputProfessional"  name = "inputProfessional" placeholder="Dr..." required>
+                    <label for="labelProfessional">Apellido del Profesional Encargado</label>
+                    <input type="text" class="form-control" id="inputProfessional"  name = "inputProfessionalLastName" placeholder="Dr..." required>
                 </div>
+                <div class="col-sm-3">
+                    <label for="labelName">Profesional Encargado</label>
+                    <select class="form-control" id="status" required name="status" >
+                        {% for worker in workers %}
+                            <option value="{{worker.id}}">{{worker.last_name}} {{worker.first_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row item-group">
                 <div class="col-sm-3">
                     <label for="labelRegister">Nombre del que registra</label>
                     <input type="text" class="form-control" id="inputRegister" name ="inputRegister" placeholder="..." required>
                 </div>
-            </div>
-            <div class="row item-group">
                 <div class="col-sm-3">
                     <label for="labelName">Estado de la Cita</label>
                     <select class="form-control" id="status" required name="status" >
@@ -57,5 +65,4 @@
                 </div>
             </div>
         </form>
-
 {% endblock %}
