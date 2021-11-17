@@ -7,7 +7,11 @@ from django.urls import reverse
 from datetime import date
 from datetime import timedelta
 
-from appointments.models import Appointment, Worker
+from appointments.forms import Register_appointment_form
+
+from appointments.models import Appointment, Worker, Patient
+from datetime import date
+from datetime import datetime
 
 
 def index(request):
@@ -62,24 +66,27 @@ def register_appointment(request):
     context = {}
     context['workers'] = Worker.objects.all()
     if request.method == "POST":
-        date = request.POST["inputDate"]
-        time = request.POST["inputTime"]
-        professional_lastName = request.POST["inputProfessionalLastName"]
-        professional_Name = request.POST["inputProfessionalName"]
-        patient_name = request.POST["inputName"]
-        patient_LastName = request.POST["inputLastName"]
-        appointment_status = request.POST["status"]
-        register = request.POST["inputRegister"]
-        pacient , created = Patient.objects.get_or_create(
-            id_number="0000000000",
-            name=patient_name,
-            last_name=patient_LastName,
-            email="",
-        )
-        register = request.user.id
-        worker = Worker.get()
-
-
+        form = Register_appointment_form(request.POST)
+        if form.is_valid():
+            print("Aqui estoy")        
+            date = form.cleaned_data["inputDate"]
+            time = form.cleaned_data["inputTime"]
+            worker = Worker.objects.get(email=form.cleaned_data["workerSelected"])
+            patient_name = form.cleaned_data["inputName"]
+            patient_LastName = form.cleaned_data["inputLastName"]
+            patient_id = form.cleaned_data["inputPatientID"]
+            register = request.user
+            patient , created = Patient.objects.get_or_create(
+                id_number=patient_id,
+                name=patient_name,
+                last_name=patient_LastName,
+                email="",
+            )
+            dateTime = datetime.combine(date, time)
+            ap = Appointment(registered_by=register,attended_by=worker, patient_id=patient,start_time=dateTime) 
+            ap.save()  
+        else:
+            print(form.errors)
     return render(request, "register_appointment.html", context)
 
 
