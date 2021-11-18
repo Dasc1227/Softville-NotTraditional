@@ -1,10 +1,12 @@
 from django.test import RequestFactory
 from django.test import Client
 from django.urls import reverse
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 
+from appointments.models import Worker
 from appointments.views import list_appointments
 from appointments.views import logout_view
+from appointments.views import login_view
 
 from mixer.backend.django import mixer
 
@@ -20,23 +22,26 @@ class TestLogin:
         ("logout", logout_view)
     ]
 
-    TEST_USER = {
-        "username": "good_user",
-        "password": "good_pass"
+    USERNAME_FIELD = "email"
+    PASSWORD_FIELD = "password"
+
+    GOOD_USER = {
+        USERNAME_FIELD: "good@mail.com",
+        PASSWORD_FIELD: "good_pass"
     }
 
     BAD_CREDENTIALS = [
         {
-            "username": "good_user",
-            "password": "bad_pass"
+            USERNAME_FIELD: "good@mail.com",
+            PASSWORD_FIELD: "bad_pass"
         },
         {
-            "username": "bad_user",
-            "password": "good_pass"
+            USERNAME_FIELD: "bad@mail.com",
+            PASSWORD_FIELD: "good_pass"
         },
         {
-            "username": "bad_user",
-            "password": "bad_pass"
+            USERNAME_FIELD: "bad@mail.com",
+            PASSWORD_FIELD: "bad_pass"
         },
     ]
 
@@ -44,7 +49,7 @@ class TestLogin:
     def test_allowed_access(self, url_name, func):
         path = reverse(url_name)
         request = RequestFactory().get(path)
-        request.user = mixer.blend(User)
+        request.user = mixer.blend(Worker)
 
         response = func(request)
         assert self.HTTP_OK_CODE == response.status_code
@@ -60,18 +65,30 @@ class TestLogin:
 
     @pytest.fixture
     def new_user(self):
-        return User.objects.create_user(**self.TEST_USER)
+        return Worker.objects.create_user(**self.GOOD_USER)
 
     def test_successful_login(self, new_user):
         client = Client()
-        response = client.post("/login", self.TEST_USER, follow=True)
-        assert response.context["user"].is_authenticated is True
+        response = client.post("/login", self.GOOD_USER, follow=True)
+        assert response.context["user"].is_active is True
+
+    def test_unsuccessful_login(self, new_user):
+        client = Client()
+        bad_pass_user = self.BAD_CREDENTIALS[0]
+        response = client.post("/login", bad_pass_user, follow=True)
+
+        assert response.context["user"].is_authenticated is False
 
     @pytest.mark.parametrize("bad_user", BAD_CREDENTIALS)
-    def test_unsuccessful_login(self, new_user, bad_user):
-        client = Client()
-        response = client.post("/login", bad_user, follow=True)
-        assert response.context["user"].is_authenticated is False
+    def test_unexisting_users_login(self, bad_user):
+        path = reverse('login')
+        factory = RequestFactory()
+        request = factory.post(path, data=bad_user)
+
+        # Notice that good@mail.com should be marked as unexisting
+        # since the new_user fixture is not getting called in this test
+        with pytest.raises(Worker.DoesNotExist):
+            login_view(request)
 
     def test_five_attempts_blocked(self, new_user):
         client = Client()
@@ -79,5 +96,5 @@ class TestLogin:
         for attempt in range(0, 5):
             client.post("/login", bad_pass_user, follow=True)
 
-        response = client.post("/login", self.TEST_USER, follow=True)
+        response = client.post("/login", self.GOOD_USER, follow=True)
         assert response.context["user"].is_authenticated is False
