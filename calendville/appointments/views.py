@@ -63,8 +63,7 @@ def logout_view(request):
 
 @login_required(login_url='/login')
 def register_appointment(request):
-    context = {}
-    context['workers'] = Worker.objects.all()
+    context = {'workers': Worker.objects.all()}
     if request.method == "POST":
         form = Register_appointment_form(request.POST)
         if form.is_valid():       
