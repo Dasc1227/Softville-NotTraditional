@@ -58,6 +58,7 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+@login_required(login_url='/login')
 def register_appointment(request):
     return render(request, "register_appointment.html")
 
