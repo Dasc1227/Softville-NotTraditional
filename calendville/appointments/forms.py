@@ -1,5 +1,6 @@
 from django import forms
 
+
 class Register_appointment_form(forms.Form):
     inputDate = forms.DateField()
     inputTime = forms.TimeField()

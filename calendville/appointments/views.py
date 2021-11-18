@@ -4,7 +4,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from datetime import date
 from datetime import timedelta
 
 from appointments.forms import Register_appointment_form
@@ -70,21 +69,24 @@ def register_appointment(request):
         if form.is_valid():       
             date = form.cleaned_data["inputDate"]
             time = form.cleaned_data["inputTime"]
-            worker = Worker.objects.get(email=form.cleaned_data["workerSelected"])
+            worker_choice = form.cleaned_data["workerSelected"]
+            worker = Worker.objects.get(email=worker_choice)
             patient_name = form.cleaned_data["inputName"]
             patient_LastName = form.cleaned_data["inputLastName"]
             patient_id = form.cleaned_data["inputPatientID"]
             patient_email = form.cleaned_data["inputEmail"]
             register = request.user
-            patient , created = Patient.objects.get_or_create(
+            patient, created = Patient.objects.get_or_create(
                 id_number=patient_id,
                 name=patient_name,
                 last_name=patient_LastName,
                 email=patient_email,
             )
             dateTime = datetime.combine(date, time)
-            ap = Appointment(registered_by=register,attended_by=worker, patient_id=patient,start_time=dateTime) 
-            ap.save()  
+            ap = Appointment(registered_by=register, attended_by=worker,
+                             patient_id=patient, start_time=dateTime)
+            ap.save()
+
         else:
             print(form.errors)
     return render(request, "register_appointment.html", context)
