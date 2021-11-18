@@ -5,6 +5,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from appointments.models import Worker
 from appointments.views import list_appointments
+from appointments.views import register_appointment
 from appointments.views import logout_view
 from appointments.views import login_view
 
@@ -17,8 +18,16 @@ import pytest
 class TestLogin:
     HTTP_REDIRECT_CODE = 302
     HTTP_OK_CODE = 200
+
+    TEST_PATHS = [
+        "/appointments",
+        "/logout",
+        "/register_appointment",
+    ]
+
     ACCESS_URLS = [
         ("list_appointments", list_appointments),
+        ("register_appointment", register_appointment),
         ("logout", logout_view)
     ]
 
@@ -45,13 +54,12 @@ class TestLogin:
         },
     ]
 
-    @pytest.mark.parametrize("url_name, func", ACCESS_URLS)
-    def test_allowed_access(self, url_name, func):
-        path = reverse(url_name)
-        request = RequestFactory().get(path)
-        request.user = mixer.blend(Worker)
-
-        response = func(request)
+    @pytest.mark.parametrize("path", TEST_PATHS)
+    def test_allowed_access(self, path):
+        user = mixer.blend(Worker)
+        client = Client()
+        client.login(username=user.email, password=user.password)
+        response = client.get(path, follow=True)
         assert self.HTTP_OK_CODE == response.status_code
 
     @pytest.mark.parametrize("url_name, func", ACCESS_URLS)
@@ -66,11 +74,6 @@ class TestLogin:
     @pytest.fixture
     def new_user(self):
         return Worker.objects.create_user(**self.GOOD_USER)
-
-    def test_successful_login(self, new_user):
-        client = Client()
-        response = client.post("/login", self.GOOD_USER, follow=True)
-        assert response.context["user"].is_active is True
 
     def test_unsuccessful_login(self, new_user):
         client = Client()
