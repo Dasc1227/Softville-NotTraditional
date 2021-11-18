@@ -41,8 +41,6 @@ class Worker(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100, null=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    # Adding password size as a placeholder, see
-    # https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#password-hashing-algorithms
     password_attempts = models.PositiveSmallIntegerField(default=0, null=False)
 
     USERNAME_FIELD = 'email'
