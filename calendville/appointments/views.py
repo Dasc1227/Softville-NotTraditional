@@ -67,8 +67,7 @@ def register_appointment(request):
     context['workers'] = Worker.objects.all()
     if request.method == "POST":
         form = Register_appointment_form(request.POST)
-        if form.is_valid():
-            print("Aqui estoy")        
+        if form.is_valid():       
             date = form.cleaned_data["inputDate"]
             time = form.cleaned_data["inputTime"]
             worker = Worker.objects.get(email=form.cleaned_data["workerSelected"])
