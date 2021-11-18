@@ -3,6 +3,8 @@
 {% block content %}
 
 <div>
+    <a class="btn btn-primary btn-lg" href="{% url 'register_appointment' %}">+ Registrar Cita</a>
+
     {% for appointments_day in appointments_week %}
         <div class="card mb-3">
             <div class="card-header">
