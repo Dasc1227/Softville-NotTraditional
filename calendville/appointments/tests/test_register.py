@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta, date
 
-from django.test import RequestFactory
 from django.test import Client
-from django.urls import reverse
 
 import pytest
 from mixer.backend.django import mixer
@@ -37,7 +35,7 @@ class TestRegister:
 
     def test_valid_appointment(self, log_in, create_worker):
         VALID_APPOINTMENT = {
-            "inputDate": date.today() + timedelta(days=1),
+            "inputDate": (date.today() + timedelta(days=1)).strftime("%x"),
             "inputTime": datetime.now().strftime("%X"),
             "inputLastName": self.patient.last_name,
             "inputName": self.patient.name,
@@ -47,7 +45,42 @@ class TestRegister:
         }
 
         response = self.client.post('/register_appointment', VALID_APPOINTMENT, follow=True)
-        assert self.HTTP_OK_CODE == response.status_code
 
+    def test_past_date_appointment(self, log_in, create_worker):
+        PAST_DATE_APPOINTMENT = {
+            "inputDate": (date.today() - timedelta(days=1)).strftime("%x"),
+            "inputTime": datetime.now().strftime("%X"),
+            "inputLastName": self.patient.last_name,
+            "inputName": self.patient.name,
+            "inputEmail": self.patient.email,
+            "inputPatientID": self.patient.id_number,
+            "workerSelected": self.worker.email,
+        }
 
+        response = self.client.post('/register_appointment', PAST_DATE_APPOINTMENT, follow=True)
 
+    def test_past_time_appointment(self, log_in, create_worker):
+        PAST_TIME_APPOINTMENT = {
+            "inputDate": date.today().strftime("%x"),
+            "inputTime": (datetime.now() - timedelta(hours=1)).strftime("%X"),
+            "inputLastName": self.patient.last_name,
+            "inputName": self.patient.name,
+            "inputEmail": self.patient.email,
+            "inputPatientID": self.patient.id_number,
+            "workerSelected": self.worker.email,
+        }
+
+        response = self.client.post('/register_appointment', PAST_TIME_APPOINTMENT, follow=True)
+
+    def test_empty_fields_appointment(self, log_in, create_worker):
+        EMPTY_WORKER_APPOINTMENT = {
+            "inputDate": date.today().strftime("%x"),
+            "inputTime": (datetime.now() - timedelta(hours=1)).strftime("%X"),
+            "inputLastName": self.patient.last_name,
+            "inputName": self.patient.name,
+            "inputEmail": self.patient.email,
+            "inputPatientID": self.patient.id_number,
+            "workerSelected": "",
+        }
+
+        response = self.client.post('/register_appointment', EMPTY_WORKER_APPOINTMENT, follow=True)
