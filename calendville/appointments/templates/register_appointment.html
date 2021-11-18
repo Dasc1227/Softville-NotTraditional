@@ -69,13 +69,10 @@
             <div id="form_errors">
                 {% for key, value in form.errors.items %}
                     <span class="fieldWrapper">
-                        {{ key }}:{{ value }}
+                        {{ value }}
                     </span>
                 {% endfor %}
             </div>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
         </div>
         {% endif %}
     
