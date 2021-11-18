@@ -75,12 +75,13 @@ def register_appointment(request):
             patient_name = form.cleaned_data["inputName"]
             patient_LastName = form.cleaned_data["inputLastName"]
             patient_id = form.cleaned_data["inputPatientID"]
+            patient_email = form.cleaned_data["inputEmail"]
             register = request.user
             patient , created = Patient.objects.get_or_create(
                 id_number=patient_id,
                 name=patient_name,
                 last_name=patient_LastName,
-                email="",
+                email=patient_email,
             )
             dateTime = datetime.combine(date, time)
             ap = Appointment(registered_by=register,attended_by=worker, patient_id=patient,start_time=dateTime) 

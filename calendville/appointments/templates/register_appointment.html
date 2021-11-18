@@ -11,34 +11,44 @@
             {% csrf_token %}
             <div class="form-group">
                 <div class="row item-group">
+                    <h5>Datos de la fecha</h5>
                     <div class="col-sm-3">
                         <label for="labelDate">Fecha de la Cita</label>
-                        <input type="date" class="form-control" id="inputDate" name = "inputDate" placeholder="12/09/2020" required >
+                        <input type="date" class="form-control" id="inputDate" name = "inputDate" placeholder="Selecciona una fecha" required >
                     </div>
                     <div class="col-sm-3">
                         <label for="labelTime">Hora de la Cita</label>
-                        <input type="datetime" class="form-control" id="inputTime" name="inputTime" placeholder="12:00" required>
+                        <input type="datetime" class="form-control" id="inputTime" name="inputTime" placeholder="Introduzca la hora" required>
                     </div>
                 </div>
             </div>
+            <br>
             <div class="row item-group">
+                <h5>Datos del paciente</h5>
                 <div class="col-sm-3">
                     <label for="labelLastName">Apellido del Paciente</label>
-                    <input type="text" class="form-control" id="inputLastName" name="inputLastName" placeholder="Sr. Alex..." required>
+                    <input type="text" class="form-control" id="inputLastName" name="inputLastName" placeholder="Introduzca el apellido del paciente" required>
                 </div>
                 <div class="col-sm-3">
                     <label for="labelLastName">Nombre del Paciente</label>
-                    <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Sr. Alex..." required>
+                    <input type="text" class="form-control" id="inputName" name="inputName" placeholder="Introduzca el nombre del paciente" required>
+                </div>
+                <div class="col-sm-3">
+                    <label for="labelLastName">Correo del Paciente</label>
+                    <input type="email" class="form-control" id="inputEmail" name="inputEmail" placeholder="Introduzca el email del paciente" required>
                 </div>
             </div>
+            <br>
             <div class="row item-group">
+                <h5>Otros datos</h5>
                 <div class="col-sm-3">
                     <label for="labelName">Cedula del paciente</label>
-                    <input type="text" class="form-control" id="inputPatientID" name="inputPatientID" placeholder="11...." required>
+                    <input type="text" class="form-control" id="inputPatientID" name="inputPatientID" placeholder="Introduzca la cedula" required>
                 </div>
                 <div class="col-sm-3">
                     <label for="labelName">Profesional Encargado</label>
                     <select class="form-control" id="workerSelected" required name="workerSelected" >
+                        <option value="" disabled selected>Seleccione un especialista</option>
                         {% for worker in workers %}
                             <option value="{{worker.email}}">{{worker.last_name}} {{worker.first_name}}</option>
                         {% endfor %}
@@ -52,6 +62,8 @@
                 </div>
             </div>
         </form>
+
+
         {% if form.errors %}
         <div class="alert alert-danger alert-dismissible col-12 mx-1" role="alert">
             <div id="form_errors">
