@@ -9,5 +9,3 @@ class Register_appointment_form(forms.Form):
     inputPatientID = forms.CharField(max_length=100)
     workerSelected = forms.CharField(max_length=100)
     inputEmail = forms.EmailField(max_length=100)
-
-
