@@ -1,12 +1,7 @@
-from django.test import RequestFactory
 from django.urls import reverse
-from django.contrib.auth.models import User
-
-from appointments.views import list_appointments
 
 from appointments.models import Appointment, Worker, Patient
 from datetime import date, timedelta
-from mixer.backend.django import mixer
 
 import pytest
 
@@ -37,26 +32,23 @@ class TestListAppointments:
                                    patient_id=patient_1,
                                    start_time=date.today() + timedelta(days=2))
 
-    def test_appointment_exist(self, setup):
+    def test_appointment_exist(self, setup, logged_user):
+        client, user = logged_user()
         path = reverse("list_appointments")
-        request = RequestFactory().get(path)
-        request.user = mixer.blend(User)
-        response = list_appointments(request)
+        response = client.get(path)
         appointments_list = response.context["appointments_week"]
         assert len(appointments_list[0]["appointments"]) > 0
 
-    def test_appointment_do_not_exist(self, setup):
+    def test_appointment_do_not_exist(self, setup, logged_user):
+        client, user = logged_user()
         path = reverse("list_appointments")
-        request = RequestFactory().get(path)
-        request.user = mixer.blend(User)
-        response = list_appointments(request)
+        response = client.get(path)
         appointments_list = response.context["appointments_week"]
         assert len(appointments_list[1]["appointments"]) > 0
 
-    def test_appointment_other_day_of_week(self, setup):
+    def test_appointment_other_day_of_week(self, setup, logged_user):
+        client, user = logged_user()
         path = reverse("list_appointments")
-        request = RequestFactory().get(path)
-        request.user = mixer.blend(User)
-        response = list_appointments(request)
+        response = client.get(path)
         appointments_list = response.context["appointments_week"]
         assert len(appointments_list[2]["appointments"]) > 0
