@@ -3,16 +3,18 @@ import pytest
 
 PASSWORD_KEY = "password"
 USERNAME_KEY = "email"
+DEFAULT_USERNAME = "user@example.com"
+DEFAULT_PASS = "strong-test-pass"
 
 
 @pytest.fixture
 def test_username():
-    return "user@example.com"
+    return DEFAULT_USERNAME
 
 
 @pytest.fixture
 def test_password():
-    return "strong-test-pass"
+    return DEFAULT_PASS
 
 
 @pytest.fixture
