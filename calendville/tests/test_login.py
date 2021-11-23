@@ -3,9 +3,6 @@ from django.test import Client
 from django.urls import reverse
 
 from appointments.models import Worker
-from appointments.views import list_appointments
-from appointments.views import register_appointment
-from appointments.views import logout_view
 from appointments.views import login_view
 
 import pytest
@@ -78,7 +75,7 @@ class TestLogin:
         factory = RequestFactory()
         request = factory.post(path, data=bad_user)
 
-        # Notice that goo should be marked as unexisting
+        # Notice that DEFAULT_USERNAME should be marked as unexisting
         # since the create_user fixture is not getting called in this test
         with pytest.raises(Worker.DoesNotExist):
             login_view(request)
