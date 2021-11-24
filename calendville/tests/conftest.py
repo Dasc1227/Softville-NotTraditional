@@ -25,7 +25,7 @@ def create_user(db, django_user_model, test_username, test_password):
             kwargs[USERNAME_KEY] = test_username
         # TODO: Check how to use create_user to login in both web and
         # testing environments, using superuser for now
-        return django_user_model.objects.create_superuser(**kwargs)
+        return django_user_model.objects.create_user(**kwargs)
     return make_user
 
 
