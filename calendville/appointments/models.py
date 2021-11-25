@@ -26,7 +26,7 @@ class Worker(AbstractBaseUser, PermissionsMixin):
         (PHYSICAL, 'Física'),
         (JURIDICAL, 'Jurídica'),
         (NITE, 'Número de Identificación Tributario Especial'),
-        (DIMEX, 'Documento de Identifcación de Migración y Extrangería')
+        (DIMEX, 'Documento de Identifcación de Migración y Extranjería')
     ]
     ROLE_TYPES = [
         (HEALTH_PROFFESIONAL, 'Doctor'),
