@@ -13,14 +13,14 @@ from datetime import date
 from datetime import datetime
 
 
+@login_required(login_url='/login')
 def index(request):
-    return HttpResponseRedirect(reverse("login"))
+    return render(request, "index.html")
 
 
 def login_view(request):
     context = {}
     if request.method == "POST":
-
         # Attempt to sign user in
         email = request.POST["email"]
         password = request.POST["password"]
@@ -28,6 +28,8 @@ def login_view(request):
 
         # Check if authentication is successful
         if user is not None:
+            user.password_attempts = 0
+            user.save()
             login(request, user)
             if request.POST.get("next"):
                 return HttpResponseRedirect(request.POST.get("next"))
@@ -35,14 +37,15 @@ def login_view(request):
                 return HttpResponseRedirect(reverse("index"))
         else:
             user = Worker.objects.get(email=email)
+            # User exists, but could not be authenticated (incorrect password)
             if user is not None:
+                context["error"] = "Contraseña inválida."
+                user.password_attempts += 1
+
                 # Check if user is blocked
                 if user.password_attempts >= 5:
                     user.is_active = False
-                # Else, increment password attempts
-                else:
-                    context["error"] = "Contraseña inválida."
-                    user.password_attempts += 1
+
                 user.save()
 
                 context["user_blocked"] = user.is_active
@@ -51,8 +54,10 @@ def login_view(request):
                 context["error"] = "El correo no existe en el sistema."
 
             return render(request, "login.html", context)
-    else:
+    elif request.user.is_anonymous:
         return render(request, "login.html")
+    else:
+        return HttpResponseRedirect(reverse("index"))
 
 
 @login_required(login_url='/login')

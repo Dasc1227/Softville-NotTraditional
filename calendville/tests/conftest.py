@@ -1,4 +1,6 @@
 import pytest
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
 
 PASSWORD_KEY = "password"
@@ -37,3 +39,28 @@ def logged_user(db, client, create_user, test_username, test_password):
         client.login(username=test_username, password=test_password)
         return client, user
     return make_auto_login
+
+
+@pytest.fixture
+def firefox_driver():
+    firefox_options = Options()
+    firefox_options.headless = True
+    driver = webdriver.Firefox(options=firefox_options)
+    yield driver
+    driver.quit()
+
+
+@pytest.fixture
+def logged_firefox(live_server, firefox_driver, create_user):
+    def login_driver(user=None):
+        if user is None:
+            user = create_user()
+        base_url = str(live_server)
+        firefox_driver.get(base_url + "/login")
+        login_input = firefox_driver.find_element_by_id("email")
+        login_input.send_keys(user.email)
+        password_input = firefox_driver.find_element_by_id("password")
+        password_input.send_keys(DEFAULT_PASS)
+        firefox_driver.find_element_by_id("submit").click()
+        return firefox_driver, user, live_server
+    return login_driver

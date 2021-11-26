@@ -2,6 +2,43 @@
 
 {% block content %}
 
-  <h2>Citas</h2>
+<h2>Menú principal</h2>
+<hr/>
+<div id="main-container" class="row">
+  <div class="col-md-6 col-lg-4 p-3">
+    <div class="card">
+      <div class="card-body">
+        <h4>Citas</h4>
+        <p class="card-text">Consulte las citas de los próximos 7 días</span>
+        <div class="d-grid gap-2">
+          <a class="btn btn-primary btn-lg" href="/appointments" role="button">Consultar citas</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4 p-3">
+    <div class="card">
+      <div class="card-body">
+        <h4>Pacientes</h4>
+        <p class="card-text">Consulte la lista de pacientes</span>
+        <div class="d-grid gap-2">
+          <a class="btn btn-primary btn-lg" href="#" role="button">Consultar pacientes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-4 p-3">
+    <div class="card">
+      <div class="card-body">
+        <h4>Procedimientos de salud</h4>
+        <p class="card-text">Consulte los procedimientos de salud asociados a los pacientes</span>
+        <div class="d-grid gap-2">
+          <a class="btn btn-primary btn-lg" href="#" role="button">Consultar procedimientos de salud</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 {% endblock %}
