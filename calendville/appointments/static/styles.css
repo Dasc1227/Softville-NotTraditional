@@ -1,6 +1,12 @@
 .title{
     font-size: 10px;
 }
+
+#login-container {
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
 .container{
     margin-top: 30px;
     margin-left: 50px;
@@ -8,6 +14,7 @@
 
 .item-group{
     margin-top: 30px;
+    margin-bottom: 20px;
 }
 
 .navbar-brand{

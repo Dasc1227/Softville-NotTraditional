@@ -26,7 +26,7 @@ class Worker(AbstractBaseUser, PermissionsMixin):
         (PHYSICAL, 'Física'),
         (JURIDICAL, 'Jurídica'),
         (NITE, 'Número de Identificación Tributario Especial'),
-        (DIMEX, 'Documento de Identifcación de Migración y Extrangería')
+        (DIMEX, 'Documento de Identifcación de Migración y Extranjería')
     ]
     ROLE_TYPES = [
         (HEALTH_PROFFESIONAL, 'Doctor'),
@@ -40,7 +40,9 @@ class Worker(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=100, null=False)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    # Adding password size as a placeholder, see
+    # https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#password-hashing-algorithms
     password_attempts = models.PositiveSmallIntegerField(default=0, null=False)
 
     USERNAME_FIELD = 'email'

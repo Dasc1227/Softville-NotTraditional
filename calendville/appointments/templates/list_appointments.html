@@ -3,6 +3,8 @@
 {% block content %}
 
 <div>
+    <a class="btn btn-primary btn-lg" href="{% url 'register_appointment' %}">+ Registrar Cita</a>
+
     {% for appointments_day in appointments_week %}
         <div class="card mb-3">
             <div class="card-header">
@@ -24,10 +26,10 @@
                                 <strong>Fecha: </strong><span>{{ appointment.start_time }}</span>
                             </div>
                             <div class="col-md-4">
-                                <strong>Profesional: </strong><span>{{appointment.attended_by.name}} {{appointment.attended_by.last_name}}</span>
+                                <strong>Profesional: </strong><span>{{appointment.attended_by.first_name}} {{appointment.attended_by.last_name}}</span>
                             </div>
                             <div class="col-md-4">
-                                <strong>Registrada por: </strong><span>{{appointment.registered_by.name}} {{appointment.registered_by.last_name}}</span>
+                                <strong>Registrada por: </strong><span>{{appointment.registered_by.first_name}} {{appointment.registered_by.last_name}}</span>
                             </div>
                         </div>
                     </div>
