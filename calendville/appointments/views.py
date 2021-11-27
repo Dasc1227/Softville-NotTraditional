@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -6,11 +7,10 @@ from django.urls import reverse
 
 from datetime import timedelta
 
-from appointments.forms import Register_appointment_form
-
-from appointments.models import Appointment, Worker, Patient
+from appointments.models import Appointment, Worker
 from datetime import date
-from datetime import datetime
+
+from appointments.forms import RegisterAppointmentForm
 
 
 @login_required(login_url='/login')
@@ -68,34 +68,29 @@ def logout_view(request):
 
 @login_required(login_url='/login')
 def register_appointment(request):
-    context = {'workers': Worker.objects.all()}
+
     if request.method == "POST":
-        form = Register_appointment_form(request.POST)
+        form = RegisterAppointmentForm(request.POST)
         if form.is_valid():
-            date = form.cleaned_data["inputDate"]
-            time = form.cleaned_data["inputTime"]
-            worker_choice = form.cleaned_data["workerSelected"]
-            worker = Worker.objects.get(email=worker_choice)
-            patient_name = form.cleaned_data["inputName"]
-            patient_LastName = form.cleaned_data["inputLastName"]
-            patient_id = form.cleaned_data["inputPatientID"]
-            patient_email = form.cleaned_data["inputEmail"]
-            register = request.user
-            patient, created = Patient.objects.get_or_create(
-                id_number=patient_id,
-                name=patient_name,
-                last_name=patient_LastName,
-                email=patient_email,
+            appointment_date = form.cleaned_data['date']
+            appointment_time = form.cleaned_data['time']
+            doctor = form.cleaned_data['attended_by']
+            patient = form.cleaned_data["patient_id"]
+            secretary = request.user
+            appointment = Appointment(
+                registered_by=secretary,
+                attended_by=doctor,
+                patient_id=patient,
+                start_time=datetime.combine(appointment_date,
+                                            appointment_time)
             )
-            dateTime = datetime.combine(date, time)
-            ap = Appointment(registered_by=register, attended_by=worker,
-                             patient_id=patient, start_time=dateTime)
-            ap.save()
+            appointment.save()
+    else:
+        form = RegisterAppointmentForm()
 
-        else:
-            context["form"] = form
-
-    return render(request, "register_appointment.html", context)
+    return render(request, "register_appointment.html", {
+        'form': form
+    })
 
 
 @login_required(login_url='/login')

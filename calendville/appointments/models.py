@@ -14,6 +14,9 @@ class Patient(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=254, unique=True)
 
+    def __str__(self):
+        return f"{self.name} {self.last_name} ({self.id_number})"
+
 
 class Worker(AbstractBaseUser, PermissionsMixin):
     PHYSICAL = "PH"
@@ -62,7 +65,7 @@ class Worker(AbstractBaseUser, PermissionsMixin):
         return worker.id_number
 
     def __str__(self):
-        return self.email
+        return f"{self.first_name} {self.last_name}"
 
 
 class Appointment(models.Model):
