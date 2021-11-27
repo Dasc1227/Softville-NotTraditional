@@ -6,8 +6,15 @@ from appointments.models import Appointment
 
 
 class RegisterAppointmentForm(forms.ModelForm):
-    date = forms.DateField(label="Fecha", widget=forms.DateInput(attrs={'type': 'date', 'min': datetime.today().strftime("%Y-%m-%d")}))
-    time = forms.TimeField(label="Hora", widget=forms.TimeInput(attrs={'type': 'time'}))
+    date = forms.DateField(label="Fecha",
+                           widget=forms.DateInput(
+                               attrs={
+                                   'type': 'date',
+                                   'min': datetime.today().strftime("%Y-%m-%d")
+                               }
+                           ))
+    time = forms.TimeField(label="Hora",
+                           widget=forms.TimeInput(attrs={'type': 'time'}))
 
     class Meta:
         model = Appointment
@@ -24,13 +31,17 @@ class RegisterAppointmentForm(forms.ModelForm):
         time = self.cleaned_data['time']
         doctor = self.cleaned_data['attended_by']
         if date and time:
-            my_date_time = (date + ' ' + time + ':00')
-            my_date_time = datetime.strptime(my_date_time, '%m/%d/%Y %H:%M:%S')
-            collapsed_appointment = Appointment.objects.filter(attended_by=doctor, start_time__range=(my_date_time, my_date_time + timedelta(hours=1)))            
+            appointment_datetime = datetime.combine(date, time)
+            prev_appointment = appointment_datetime - timedelta(minutes=59)
+            collapsed_appointment = Appointment.objects.filter(
+                attended_by=doctor,
+                start_time__range=(prev_appointment,
+                                   appointment_datetime)
+            )
             if collapsed_appointment:
-                msg = u"Existe una hora"
-                self.add_error('time', '')
-            if datetime.now() <= my_date_time:
+                msg = u"El doctor ya tiene una cita en ese momento."
+                self.add_error('time', msg)
+            if appointment_datetime <= datetime.now():
                 msg = u"¡Fecha inválida!"
                 self.add_error('date', msg)
         return self.cleaned_data

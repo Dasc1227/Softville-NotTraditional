@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -72,12 +72,18 @@ def register_appointment(request):
     if request.method == "POST":
         form = RegisterAppointmentForm(request.POST)
         if form.is_valid():
-            date = form.cleaned_data['date']
-            time = form.cleaned_data['time']
+            appointment_date = form.cleaned_data['date']
+            appointment_time = form.cleaned_data['time']
             doctor = form.cleaned_data['attended_by']
             patient = form.cleaned_data["patient_id"]
             secretary = request.user
-            appointment = Appointment(registered_by=secretary, attended_by=doctor, patient_id=patient, start_time=datetime.combine(date, time))
+            appointment = Appointment(
+                registered_by=secretary,
+                attended_by=doctor,
+                patient_id=patient,
+                start_time=datetime.combine(appointment_date,
+                                            appointment_time)
+            )
             appointment.save()
     else:
         form = RegisterAppointmentForm()
