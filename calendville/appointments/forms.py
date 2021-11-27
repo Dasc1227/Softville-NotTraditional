@@ -7,6 +7,7 @@ from appointments.models import Appointment
 
 class RegisterAppointmentForm(forms.ModelForm):
     date = forms.DateField(label="Fecha",
+                           required=True,
                            widget=forms.DateInput(
                                attrs={
                                    'type': 'date',
@@ -14,6 +15,7 @@ class RegisterAppointmentForm(forms.ModelForm):
                                }
                            ))
     time = forms.TimeField(label="Hora",
+                           required=True,
                            widget=forms.TimeInput(attrs={'type': 'time'}))
 
     class Meta:
@@ -39,9 +41,9 @@ class RegisterAppointmentForm(forms.ModelForm):
                                    appointment_datetime)
             )
             if collapsed_appointment:
-                msg = u"El doctor ya tiene una cita en ese momento."
+                msg = "El doctor ya tiene una cita en ese momento."
                 self.add_error('time', msg)
             if appointment_datetime <= datetime.now():
-                msg = u"¡Fecha inválida!"
+                msg = "¡Fecha inválida!"
                 self.add_error('date', msg)
         return self.cleaned_data

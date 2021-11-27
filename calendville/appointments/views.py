@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from datetime import timedelta
 
-from appointments.models import Appointment, Worker
+from appointments.models import Appointment, Worker, Patient
 from datetime import date
 
 from appointments.forms import RegisterAppointmentForm
@@ -68,7 +68,6 @@ def logout_view(request):
 
 @login_required(login_url='/login')
 def register_appointment(request):
-
     if request.method == "POST":
         form = RegisterAppointmentForm(request.POST)
         if form.is_valid():
