@@ -1,13 +1,10 @@
-from django.test import RequestFactory
-from django.test import Client
 from django.urls import reverse
 
 from appointments.models import Worker
-from appointments.views import login_view
 
 import pytest
 
-from conftest import DEFAULT_USERNAME, DEFAULT_PASS, PASSWORD_KEY
+from conftest import DEFAULT_USERNAME, DEFAULT_PASS
 
 
 @pytest.mark.django_db
@@ -17,6 +14,7 @@ class TestLogin:
 
     TEST_PATH_CODE = [
         ("list_appointments", HTTP_OK_CODE),
+        ("index", HTTP_OK_CODE),
         ("register_appointment", HTTP_OK_CODE),
         ("logout", HTTP_REDIRECT_CODE)
     ]
@@ -53,36 +51,54 @@ class TestLogin:
         assert expected_code == response.status_code
 
     @pytest.mark.parametrize("path", TEST_PATH_CODE)
-    def test_unallowed_access(self, path):
+    def test_unallowed_access(self, path, client):
         real_path = reverse(path[0])
-        client = Client()
         response = client.get(real_path)
 
         assert self.HTTP_REDIRECT_CODE == response.status_code
 
-    def test_unsuccessful_login(self, create_user):
-        user = create_user()
-        client = Client()
-        bad_pass = self.BAD_CREDENTIALS["bad_pass"][PASSWORD_KEY]
-        response = client.login(username=user.email, password=bad_pass)
+    @pytest.mark.parametrize("path", TEST_PATH_CODE)
+    def test_custom_url_login(self, path, create_user, client):
+        new_url = reverse(path[0])
+        data = {
+            "email": DEFAULT_USERNAME,
+            "password": DEFAULT_PASS,
+            "next": new_url
+        }
+        path = reverse('login') + "?next=" + new_url
+        create_user()
+        response = client.post(path, data)
+        assert new_url == response.headers["Location"]
 
-        assert response is False
+    def test_unsuccessful_login(self, create_user, client):
+        path = reverse('login')
+        create_user()
+        bad_pass = self.BAD_CREDENTIALS["bad_pass"]
+        response = client.post(path, bad_pass)
+
+        assert "Contraseña inválida" in response.context["error"]
 
     @pytest.mark.parametrize("bad_user_key", BAD_CREDENTIALS)
-    def test_unexisting_users_login(self, bad_user_key):
+    def test_unexisting_users_login(self, bad_user_key, client):
         path = reverse('login')
         bad_user = self.BAD_CREDENTIALS[bad_user_key]
-        factory = RequestFactory()
-        request = factory.post(path, data=bad_user)
+        response = client.post(path, bad_user)
+        assert "no existe" in response.context["error"]
 
-        # Notice that DEFAULT_USERNAME should be marked as unexisting
-        # since the create_user fixture is not getting called in this test
-        with pytest.raises(Worker.DoesNotExist):
-            login_view(request)
+    def test_no_user_normal_login_form(self, client):
+        path = reverse("login")
+        response = client.get(path)
+        assert self.HTTP_OK_CODE == response.status_code
 
-    def test_five_attempts_blocked(self, create_user):
+    def test_redirect_when_accesing_login(self, logged_user):
+        path = reverse("login")
+        client, user = logged_user()
+        response = client.get(path)
+
+        assert self.HTTP_REDIRECT_CODE == response.status_code
+
+    def test_five_attempts_blocked(self, create_user, client):
         default_user = create_user()
-        client = Client()
         bad_pass = self.BAD_CREDENTIALS["bad_pass"]
 
         for attempt in range(0, 5):
@@ -91,9 +107,8 @@ class TestLogin:
         user = Worker.objects.get(email=default_user.email)
         assert user.password_attempts == 5 and user.is_active is False
 
-    def test_attempts_reset(self, create_user):
+    def test_attempts_reset(self, create_user, client):
         default_user = create_user()
-        client = Client()
         bad_pass = self.BAD_CREDENTIALS["bad_pass"]
 
         for attempt in range(0, 3):
@@ -102,3 +117,8 @@ class TestLogin:
         client.post('/login', self.GOOD_USER)
         user = Worker.objects.get(email=default_user.email)
         assert user.password_attempts == 0 and user.is_active is True
+
+    def test_incomplete_login_data(self, client):
+        path = reverse("login")
+        response = client.post(path)
+        assert "Datos inválidos" in response.context["error"]

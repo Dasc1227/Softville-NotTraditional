@@ -13,6 +13,10 @@ from datetime import date
 from appointments.forms import RegisterAppointmentForm
 
 
+EMAIL_KEY = "email"
+PASSWORD_KEY = "password"
+
+
 @login_required(login_url='/login')
 def index(request):
     return render(request, "index.html")
@@ -21,24 +25,32 @@ def index(request):
 def login_view(request):
     context = {}
     if request.method == "POST":
-        # Attempt to sign user in
+
+        if not (EMAIL_KEY in request.POST and
+                PASSWORD_KEY in request.POST):
+            context["error"] = "Datos inválidos"
+            return render(request, "login.html", context)
+
         email = request.POST["email"]
         password = request.POST["password"]
-        user = authenticate(request, username=email, password=password)
 
-        # Check if authentication is successful
-        if user is not None:
-            user.password_attempts = 0
-            user.save()
-            login(request, user)
-            if request.POST.get("next"):
-                return HttpResponseRedirect(request.POST.get("next"))
-            else:
-                return HttpResponseRedirect(reverse("index"))
-        else:
-            user = Worker.objects.get(email=email)
-            # User exists, but could not be authenticated (incorrect password)
+        user_entry = Worker.objects.filter(email=email)
+
+        # User exists
+        if user_entry.exists():
+            # Attempt to sign user in
+            user = authenticate(request, username=email, password=password)
             if user is not None:
+                user.password_attempts = 0
+                user.save()
+                login(request, user)
+                next_url = request.POST.get("next")
+                if next_url:
+                    return HttpResponseRedirect(next_url)
+                else:
+                    return HttpResponseRedirect(reverse("index"))
+            else:
+                user = user_entry[0]
                 context["error"] = "Contraseña inválida."
                 user.password_attempts += 1
 
@@ -50,13 +62,14 @@ def login_view(request):
 
                 context["user_blocked"] = user.is_active
                 context["login_attempts"] = 5 - user.password_attempts
-            else:
-                context["error"] = "El correo no existe en el sistema."
+        else:
+            context["error"] = "El correo no existe en el sistema"
 
-            return render(request, "login.html", context)
+        return render(request, "login.html", context)
     elif request.user.is_anonymous:
         return render(request, "login.html")
     else:
+        # GET and user is logged in
         return HttpResponseRedirect(reverse("index"))
 
 
