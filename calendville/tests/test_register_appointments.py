@@ -102,7 +102,10 @@ class TestRegisterAppointments:
             email=self.PATIENTS['patient_2']['email']
         )
 
-    def get_appointment(self, appointment_date, appointment_time, worker, patient):
+    def get_appointment(self, appointment_date,
+                        appointment_time,
+                        worker,
+                        patient):
         valid_appointment = {
             "date": appointment_date.strftime("%x"),
             "time": appointment_time.strftime("%X"),
@@ -119,8 +122,9 @@ class TestRegisterAppointments:
                                                  self.worker_1,
                                                  self.patient_1)
         self.client.post(self.REGISTER_URL, valid_appointment, follow=True)
-        assert Appointment.objects.last().start_time, datetime.combine(appointment_date,
-                                                                       appointment_time.time())
+        assert Appointment.objects.last().start_time, \
+            datetime.combine(appointment_date,
+                             appointment_time.time())
 
     def test_past_date_appointment(self, setup):
         appointment_date = date.today() - timedelta(days=1)
@@ -129,7 +133,9 @@ class TestRegisterAppointments:
                                                      appointment_time,
                                                      self.worker_1,
                                                      self.patient_1)
-        response = self.client.post(self.REGISTER_URL, past_date_appointment, follow=True)
+        response = self.client.post(self.REGISTER_URL,
+                                    past_date_appointment,
+                                    follow=True)
         assert "date" in response.context['form'].errors
 
     def test_past_time_appointment(self, setup):
@@ -139,7 +145,9 @@ class TestRegisterAppointments:
                                                      appointment_time,
                                                      self.worker_1,
                                                      self.patient_1)
-        response = self.client.post(self.REGISTER_URL, past_time_appointment, follow=True)
+        response = self.client.post(self.REGISTER_URL,
+                                    past_time_appointment,
+                                    follow=True)
         assert "time" in response.context['form'].errors
 
     @pytest.mark.parametrize("missing_field, data", EMPTY_APPOINTMENT_FORMS)
@@ -160,7 +168,9 @@ class TestRegisterAppointments:
                                                       self.worker_1,
                                                       self.patient_2)
         self.client.post(self.REGISTER_URL, appointment, follow=True)
-        response = self.client.post(self.REGISTER_URL, overlapped_appointment, follow=True)
+        response = self.client.post(self.REGISTER_URL,
+                                    overlapped_appointment,
+                                    follow=True)
         assert "attended_by" in response.context['form'].errors
 
     def test_overlapped_appointment_for_patient(self, setup):
@@ -177,5 +187,7 @@ class TestRegisterAppointments:
                                                       self.patient_1)
 
         self.client.post(self.REGISTER_URL, appointment, follow=True)
-        response = self.client.post(self.REGISTER_URL, overlapped_appointment, follow=True)
+        response = self.client.post(self.REGISTER_URL,
+                                    overlapped_appointment,
+                                    follow=True)
         assert "patient_id" in response.context['form'].errors

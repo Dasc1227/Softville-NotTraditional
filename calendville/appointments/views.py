@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from datetime import timedelta
 
-from appointments.models import Appointment, Worker, Patient
+from appointments.models import Appointment, Worker
 from datetime import date
 
 from appointments.forms import RegisterAppointmentForm
