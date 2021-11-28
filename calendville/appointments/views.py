@@ -13,6 +13,10 @@ from datetime import date
 from datetime import datetime
 
 
+EMAIL_KEY = "email"
+PASSWORD_KEY = "password"
+
+
 @login_required(login_url='/login')
 def index(request):
     return render(request, "index.html")
@@ -21,6 +25,12 @@ def index(request):
 def login_view(request):
     context = {}
     if request.method == "POST":
+
+        if not (EMAIL_KEY in request.POST and
+                PASSWORD_KEY in request.POST):
+            context["error"] = "Datos inválidos"
+            return render(request, "login.html", context)
+
         email = request.POST["email"]
         password = request.POST["password"]
 

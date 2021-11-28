@@ -117,3 +117,8 @@ class TestLogin:
         client.post('/login', self.GOOD_USER)
         user = Worker.objects.get(email=default_user.email)
         assert user.password_attempts == 0 and user.is_active is True
+
+    def test_incomplete_login_data(self, client):
+        path = reverse("login")
+        response = client.post(path)
+        assert "Datos inválidos" in response.context["error"]
