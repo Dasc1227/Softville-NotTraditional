@@ -38,17 +38,17 @@
           <ul class="navbar-nav">
             {% if user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="{% url 'index' %}">Inicio</a>
+                <a id="main-top-link" class="nav-link" aria-current="page" href="{% url 'index' %}">Inicio</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="{% url 'list_appointments' %}">Citas</a>
+                  <a id="appointments-top-link" class="nav-link" href="{% url 'list_appointments' %}">Citas</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
+                  <a id="logout-top-link" class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
               </li>
             {% else %}
               <li class="nav-item">
-                  <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                  <a id="login-top-link" class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
               </li>
             {% endif %}
           </ul>
