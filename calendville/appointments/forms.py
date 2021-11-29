@@ -36,15 +36,16 @@ class RegisterAppointmentForm(forms.ModelForm):
             patient = self.cleaned_data['patient_id']
             appointment_datetime = datetime.combine(date, time)
             prev_appointment = appointment_datetime - timedelta(minutes=59)
+            future_appointment = appointment_datetime + timedelta(minutes=59)
             overlapped_doctor_appointment = Appointment.objects.filter(
                 attended_by=doctor,
                 start_time__range=(prev_appointment,
-                                   appointment_datetime)
+                                   future_appointment)
             )
             overlapped_patient_appointment = Appointment.objects.filter(
                 patient_id=patient,
                 start_time__range=(prev_appointment,
-                                   appointment_datetime)
+                                   future_appointment)
             )
             if overlapped_doctor_appointment:
                 msg = u"El doctor ya tiene una cita en ese momento."
