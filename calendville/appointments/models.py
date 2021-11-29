@@ -82,7 +82,6 @@ class Appointment(models.Model):
 
 class HealthProcedure(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
-    assigned_to = models.ForeignKey(to=Patient, on_delete=CASCADE,
-                                    related_name="patient")
+    assigned_to = models.ForeignKey(to=Patient, on_delete=CASCADE)
     name = models.CharField(max_length=100)
     details = models.CharField(max_length=1000)
