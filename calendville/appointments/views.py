@@ -123,3 +123,13 @@ def list_appointments(request):
     return render(request, "list_appointments.html", {
         "appointments_week": appointments_week,
     })
+
+
+@login_required(login_url='/login')
+def list_health_procedures(request):
+    return None
+
+
+@login_required(login_url='/login')
+def register_health_procedures(request):
+    return None
