@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from importlib_resources._common import _
 
-from appointments.models import Appointment
+from appointments.models import Appointment, HealthProcedure
 from appointments.models import Patient
 
 
@@ -38,3 +38,4 @@ class WorkerAdmin(UserAdmin):
 admin.site.register(get_user_model(), WorkerAdmin)
 admin.site.register(Appointment)
 admin.site.register(Patient)
+admin.site.register(HealthProcedure)

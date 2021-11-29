@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div>
+    <form action="{% url 'health_procedures' %}" method="GET">
+      <input type="text" name="q" placeholder="Nombre o apellido">
+      <input type="submit" class="btn btn-primary btn-lg" value="Buscar paciente">
+    </form>
+    <a class="btn btn-primary btn-lg" href="{% url 'register_procedure' %}">+ Crear</a>
+
+    {% if not health_procedures %}
+        <h1 style="text-align: center">No hay procedimientos</h1>
+    {% else %}
+        {% for procedure in health_procedures %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    {{procedure.name}}
+                </div>
+                <div class="card-body border-bottom">
+                    <h5 class="card-title">
+                        <strong>Paciente: </strong>
+                        {{procedure.assigned_to.name}} {{procedure.assigned_to.last_name}}
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{procedure.creation_date}}</h6>
+                    <p class="card-text">{{procedure.details}}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

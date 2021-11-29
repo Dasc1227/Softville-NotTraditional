@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from appointments.models import Appointment
+from appointments.models import Appointment, HealthProcedure
 
 
 class RegisterAppointmentForm(forms.ModelForm):
@@ -47,3 +47,18 @@ class RegisterAppointmentForm(forms.ModelForm):
                 msg = "¡Fecha inválida!"
                 self.add_error('date', msg)
         return self.cleaned_data
+
+
+class RegisterHealthProcedureForm(forms.ModelForm):
+
+    class Meta:
+        model = HealthProcedure
+        exclude = ['creation_date']
+        labels = {
+            'name': _('Nombre'),
+            'assigned_to': _('Paciente'),
+            'details': _('Detalles'),
+        }
+        widgets = {
+            'details': forms.Textarea(attrs={'cols': 80, 'rows': 20})
+        }
