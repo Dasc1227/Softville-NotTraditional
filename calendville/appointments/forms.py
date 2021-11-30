@@ -29,23 +29,37 @@ class RegisterAppointmentForm(forms.ModelForm):
 
     def clean(self):
         super(RegisterAppointmentForm, self).clean()
-        date = self.cleaned_data['date']
-        time = self.cleaned_data['time']
-        doctor = self.cleaned_data['attended_by']
-        if date and time:
+        if len(self.cleaned_data) == 4:
+            date = self.cleaned_data['date']
+            time = self.cleaned_data['time']
+            doctor = self.cleaned_data['attended_by']
+            patient = self.cleaned_data['patient_id']
             appointment_datetime = datetime.combine(date, time)
             prev_appointment = appointment_datetime - timedelta(minutes=59)
-            collapsed_appointment = Appointment.objects.filter(
+            future_appointment = appointment_datetime + timedelta(minutes=59)
+            overlapped_doctor_appointment = Appointment.objects.filter(
                 attended_by=doctor,
                 start_time__range=(prev_appointment,
-                                   appointment_datetime)
+                                   future_appointment)
             )
-            if collapsed_appointment:
-                msg = "El doctor ya tiene una cita en ese momento."
-                self.add_error('time', msg)
-            if appointment_datetime <= datetime.now():
-                msg = "¡Fecha inválida!"
+            overlapped_patient_appointment = Appointment.objects.filter(
+                patient_id=patient,
+                start_time__range=(prev_appointment,
+                                   future_appointment)
+            )
+            if overlapped_doctor_appointment:
+                msg = u"El doctor ya tiene una cita en ese momento."
+                self.add_error('attended_by', msg)
+            if overlapped_patient_appointment:
+                msg = u"El paciente ya tiene una cita en ese momento."
+                self.add_error('patient_id', msg)
+            if appointment_datetime.date() < datetime.today().date():
+                msg = u"¡Fecha inválida!"
                 self.add_error('date', msg)
+            if appointment_datetime.date() == datetime.today().date() \
+                    and appointment_datetime.time() < datetime.now().time():
+                msg = u"¡Hora inválida!"
+                self.add_error('time', msg)
         return self.cleaned_data
 
 
