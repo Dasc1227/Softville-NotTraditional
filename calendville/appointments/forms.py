@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django import forms
+from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
 from appointments.models import Appointment
@@ -35,8 +36,8 @@ class RegisterAppointmentForm(forms.ModelForm):
             doctor = self.cleaned_data['attended_by']
             patient = self.cleaned_data['patient_id']
             appointment_datetime = datetime.combine(date, time)
-            prev_appointment = appointment_datetime - timedelta(minutes=59)
-            future_appointment = appointment_datetime + timedelta(minutes=59)
+            prev_appointment = make_aware(appointment_datetime - timedelta(minutes=59))
+            future_appointment = make_aware(appointment_datetime + timedelta(minutes=59))
             overlapped_doctor_appointment = Appointment.objects.filter(
                 attended_by=doctor,
                 start_time__range=(prev_appointment,
