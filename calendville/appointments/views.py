@@ -159,7 +159,7 @@ def register_health_procedures(request):
 
 
 @login_required(login_url='/login')
-def register_patient(request): 
+def register_patient(request):
     return render(request, "register_patient.html", {
 
     })
