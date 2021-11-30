@@ -3,6 +3,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from appointments.models import Appointment, HealthProcedure
+from appointments.models import Patient
 
 
 class RegisterAppointmentForm(forms.ModelForm):
@@ -76,3 +77,16 @@ class RegisterHealthProcedureForm(forms.ModelForm):
         widgets = {
             'details': forms.Textarea(attrs={'cols': 80, 'rows': 20})
         }
+
+
+class RegisterPatientForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['id_number', 'name', 'last_name', 'email']
+        labels = {
+            'id_number': _('Cedula'),
+            'name': _('Nombre'),
+            'last_name': _('Apellidos'),
+            'email': _('Correo'),
+        }
+        field_order = ['id_number', 'name', 'last_name', 'email']
