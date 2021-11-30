@@ -11,7 +11,10 @@ from datetime import timedelta
 from appointments.models import Appointment, Worker, HealthProcedure
 from datetime import date
 
-from appointments.forms import RegisterAppointmentForm, RegisterHealthProcedureForm
+from appointments.forms import (
+    RegisterAppointmentForm,
+    RegisterHealthProcedureForm
+)
 
 EMAIL_KEY = "email"
 PASSWORD_KEY = "password"
