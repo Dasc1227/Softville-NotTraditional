@@ -2,15 +2,15 @@
 
 {% block content %}
         <div class="row">
-            <h2>Registrar Cita</h2>
+            <h2>Registrar procedimiento de salud</h2>
         </div>
         <hr>
-        <form id="form_register_appointment" action="{% url 'register_appointment' %}" method="post">
+        <form id="form_register_appointment" action="{% url 'register_procedure' %}" method="post">
             {% csrf_token %}
             {{form.as_p}}
             <div class="row item-group">
                 <div class="col-sm-3">
-                    <button name="submit_button" type="submit" class="btn btn-primary btn-lg" required>Registrar</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
                 </div>
             </div>
         </form>
