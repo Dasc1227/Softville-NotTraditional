@@ -9,10 +9,13 @@ from datetime import timedelta
 
 from django.utils.timezone import make_aware
 
-from appointments.models import Appointment, Worker
+from appointments.models import Appointment, Worker, HealthProcedure
 from datetime import date
 
-from appointments.forms import RegisterAppointmentForm
+from appointments.forms import (
+    RegisterAppointmentForm,
+    RegisterHealthProcedureForm
+)
 
 EMAIL_KEY = "email"
 PASSWORD_KEY = "password"
@@ -123,4 +126,41 @@ def list_appointments(request):
 
     return render(request, "list_appointments.html", {
         "appointments_week": appointments_week,
+    })
+
+
+@login_required(login_url='/login')
+def list_health_procedures(request):
+    query = request.GET.get('q')
+    if query:
+        health_procedures = HealthProcedure.objects.filter(
+            Q(assigned_to__name__icontains=query) |
+            Q(assigned_to__last_name__icontains=query)
+        )
+    else:
+        health_procedures = HealthProcedure.objects.all()
+
+    return render(request, "list_health_procedures.html", {
+        "health_procedures": health_procedures,
+    })
+
+
+@login_required(login_url='/login')
+def register_health_procedures(request):
+    if request.method == "POST":
+        form = RegisterHealthProcedureForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = RegisterHealthProcedureForm()
+
+    return render(request, "register_health_procedure.html", {
+        'form': form
+    })
+
+
+@login_required(login_url='/login')
+def register_patient(request):
+    return render(request, "register_patient.html", {
+
     })

@@ -3,7 +3,8 @@ from django import forms
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
-from appointments.models import Appointment
+from appointments.models import Appointment, HealthProcedure
+from appointments.models import Patient
 
 
 class RegisterAppointmentForm(forms.ModelForm):
@@ -62,3 +63,31 @@ class RegisterAppointmentForm(forms.ModelForm):
                 msg = u"¡Hora inválida!"
                 self.add_error('time', msg)
         return self.cleaned_data
+
+
+class RegisterHealthProcedureForm(forms.ModelForm):
+
+    class Meta:
+        model = HealthProcedure
+        exclude = ['creation_date']
+        labels = {
+            'name': _('Nombre'),
+            'assigned_to': _('Paciente'),
+            'details': _('Detalles'),
+        }
+        widgets = {
+            'details': forms.Textarea(attrs={'cols': 80, 'rows': 20})
+        }
+
+
+class RegisterPatientForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['id_number', 'name', 'last_name', 'email']
+        labels = {
+            'id_number': _('Cedula'),
+            'name': _('Nombre'),
+            'last_name': _('Apellidos'),
+            'email': _('Correo'),
+        }
+        field_order = ['id_number', 'name', 'last_name', 'email']

@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 from appointments.managers import WorkerManager
 
+
 # See the following link for id lengths and types:
 # https://help.hulipractice.com/es/articles/1348413-ingresar-informacion-de-emisores-solo-para-costa-rica
 
@@ -77,3 +78,10 @@ class Appointment(models.Model):
     patient_id = models.ForeignKey(to=Patient, on_delete=CASCADE,
                                    related_name="patient")
     start_time = models.DateTimeField()
+
+
+class HealthProcedure(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    assigned_to = models.ForeignKey(to=Patient, on_delete=CASCADE)
+    name = models.CharField(max_length=100)
+    details = models.CharField(max_length=1000)
