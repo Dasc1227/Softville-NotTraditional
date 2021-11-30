@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 import pytest
 
 from appointments.models import Patient, Worker, Appointment
@@ -191,3 +191,15 @@ class TestRegisterAppointments:
                                     overlapped_appointment,
                                     follow=True)
         assert "patient_id" in response.context['form'].errors
+
+    def test_no_work_hours_appointment(self, setup):
+        appointment_date = date.today()
+        appointment_time = datetime.combine(appointment_date, time(8, 0, 0))
+        no_work_hour_appointment = self.get_appointment(appointment_date,
+                                                        appointment_time,
+                                                        self.worker_1,
+                                                        self.patient_1)
+        response = self.client.post(self.REGISTER_URL,
+                                    no_work_hour_appointment,
+                                    follow=True)
+        assert "time" in response.context['form'].errors
