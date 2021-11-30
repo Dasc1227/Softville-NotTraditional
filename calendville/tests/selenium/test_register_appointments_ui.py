@@ -39,9 +39,12 @@ class TestFormIntegrity:
         "submit_button"
     ]
 
-    def remove_token(fields_list, token):
+    REQUIRED_FIELDS = []
+
+    def get_required_fields(fields_list):
         fields = fields_list.copy()
-        fields.remove(token)
+        fields.remove("csrfmiddlewaretoken")
+        fields.remove("submit_button")
         return fields
 
     @pytest.mark.parametrize("field", INPUT_FIELD_IDS)
@@ -49,8 +52,7 @@ class TestFormIntegrity:
         driver, user, server = browser_in_form()
         assert driver.find_element_by_name(field)
 
-    @pytest.mark.parametrize("field", remove_token(INPUT_FIELD_IDS,
-                                                   "csrfmiddlewaretoken"))
+    @pytest.mark.parametrize("field", get_required_fields(INPUT_FIELD_IDS))
     def test_field_is_required(self, browser_in_form, field):
         driver, user, server = browser_in_form()
         input_field = driver.find_element_by_name(field)

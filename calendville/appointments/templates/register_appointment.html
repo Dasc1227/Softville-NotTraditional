@@ -1,18 +1,21 @@
 {% extends "layout.html" %}
 
+{% block title %} Registrar cita {% endblock %}
+
 {% block content %}
-        <div class="row">
-            <h2>Registrar Cita</h2>
+<div class="form-small">
+  <div class="card">
+    <div class="card-body">
+      <h1>Registrar Cita</h1>
+      <hr/>
+      <form id="form_register_appointment" action="{% url 'register_appointment' %}" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="d-grid gap-2">
+          <button name="submit_button" type="submit" class="btn btn-primary btn-lg">Registrar</button>
         </div>
-        <hr>
-        <form id="form_register_appointment" action="{% url 'register_appointment' %}" method="post">
-            {% csrf_token %}
-            {{form.as_p}}
-            <div class="row item-group">
-                <div class="col-sm-3">
-                    <button name="submit_button" type="submit" class="btn btn-primary btn-lg" required>Registrar</button>
-                </div>
-            </div>
-        </form>
-    
+      </form>
+    </div>
+  </div>  
+</div>
 {% endblock %}
