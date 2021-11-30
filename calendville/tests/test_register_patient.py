@@ -61,7 +61,7 @@ class TestRegisterPatient:
         self.client.post(self.REGISTER_URL, self.PATIENTS['patient_2'],
                          follow=True)
         valid_patient_id = self.PATIENTS['patient_2']['id_number']
-        query = Patient.objects.filter(id_number=valid_patient_id)              
+        query = Patient.objects.filter(id_number=valid_patient_id)
         assert len(query) == 1
 
     # TODO: Skipping since this functionality is not implemented yet
@@ -69,10 +69,10 @@ class TestRegisterPatient:
     def test_invalid_id(self, setup):
         response = self.client.post(self.REGISTER_URL,
                                     self.PATIENTS['patient_1'],
-                                    follow=True)          
+                                    follow=True)
         assert "patient_id" in response.context['form'].errors
 
-    # TODO: Skipping since this functionality is not implemented yet    
+    # TODO: Skipping since this functionality is not implemented yet
     @pytest.mark.skip
     def test_repeat_id(self, setup):
         self.patient_2 = Patient.objects.create(
@@ -83,7 +83,7 @@ class TestRegisterPatient:
         )
         response = self.client.post(self.REGISTER_URL,
                                     self.PATIENTS['patient_3'],
-                                    follow=True)         
+                                    follow=True)
         assert "patient_id" in response.context['form'].errors
 
     # TODO: Skipping since this functionality is not implemented yet
@@ -91,4 +91,4 @@ class TestRegisterPatient:
     @pytest.mark.parametrize("missing_field, data", EMPTY_APPOINTMENT_FORMS)
     def test_empty_field_patient(self, setup, missing_field, data):
         response = self.client.post(self.REGISTER_URL, data, follow=True)
-        assert missing_field in response.context['form'].errors       
+        assert missing_field in response.context['form'].errors
