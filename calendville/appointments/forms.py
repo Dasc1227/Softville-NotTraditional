@@ -90,3 +90,28 @@ class RegisterPatientForm(forms.ModelForm):
             'email': _('Correo'),
         }
         field_order = ['id_number', 'name', 'last_name', 'email']
+
+
+class LoginForm(forms.Form):
+    email = forms.CharField(
+        label="Correo", max_length=254, required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "id": "email"
+        })
+    )
+    password = forms.CharField(
+        label="Contraseña", required=True,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "type": "password",
+            "id": "password"
+        })
+    )
+    next = forms.CharField(
+        widget=forms.HiddenInput(attrs={"id": "next"}),
+        required=False
+    )
+
+    def clean(self):
+        super(LoginForm, self).clean()

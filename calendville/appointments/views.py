@@ -12,6 +12,7 @@ from appointments.models import Appointment, Worker, HealthProcedure
 from datetime import date
 
 from appointments.forms import (
+    LoginForm,
     RegisterAppointmentForm,
     RegisterHealthProcedureForm
 )
@@ -70,7 +71,9 @@ def login_view(request):
 
         return render(request, "login.html", context)
     elif request.user.is_anonymous:
-        return render(request, "login.html")
+        form = LoginForm()
+        form.fields["next"].initial = request.GET["next"]
+        return render(request, "login.html", {"form": form})
     else:
         # GET and user is logged in
         return HttpResponseRedirect(reverse("index"))
