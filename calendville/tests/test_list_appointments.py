@@ -41,14 +41,15 @@ class TestListAppointments:
         appointments_list = response.context["appointments_week"]
         assert len(appointments_list[0]["appointments"]) > 0
 
-    # TODO: Skipping since this test file is pending to review by its owner
-    @pytest.mark.skip
     def test_appointment_do_not_exist(self, setup, logged_user):
         client, user = logged_user()
         path = reverse("list_appointments")
         response = client.get(path)
         appointments_list = response.context["appointments_week"]
-        assert len(appointments_list[1]["appointments"]) > 0
+        number_appointments = 0
+        for i in range(0, 6):
+            number_appointments += len(appointments_list[i]["appointments"])
+        assert number_appointments < 3
 
     def test_appointment_other_day_of_week(self, setup, logged_user):
         client, user = logged_user()
