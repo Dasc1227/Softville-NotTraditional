@@ -76,14 +76,16 @@ class TestLogin:
         bad_pass = self.BAD_CREDENTIALS["bad_pass"]
         response = client.post(path, bad_pass)
 
-        assert "Contraseña inválida" in response.context["error"]
+        form = response.context["form"]
+        assert len(form.errors["password"]) > 0
 
     @pytest.mark.parametrize("bad_user_key", BAD_CREDENTIALS)
     def test_unexisting_users_login(self, bad_user_key, client):
         path = reverse('login')
         bad_user = self.BAD_CREDENTIALS[bad_user_key]
         response = client.post(path, bad_user)
-        assert "no existe" in response.context["error"]
+        form = response.context["form"]
+        assert len(form.errors["email"]) > 0
 
     def test_no_user_normal_login_form(self, client):
         path = reverse("login")
@@ -121,4 +123,19 @@ class TestLogin:
     def test_incomplete_login_data(self, client):
         path = reverse("login")
         response = client.post(path)
-        assert "Datos inválidos" in response.context["error"]
+        form = response.context["form"]
+        assert (len(form.errors["email"]) > 0 and
+                len(form.errors["password"]) > 0)
+
+    def test_external_redirection_blocked(self, create_user, client):
+        new_url = "https://www.google.com"
+        data = {
+            "email": DEFAULT_USERNAME,
+            "password": DEFAULT_PASS,
+            "next": new_url
+        }
+        path = reverse('login') + "?next=" + new_url
+        create_user()
+        response = client.post(path, data)
+        form = response.context["form"]
+        assert len(form.errors["next"]) > 0
