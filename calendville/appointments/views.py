@@ -3,17 +3,18 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from datetime import timedelta
 
-from appointments.models import Appointment, Worker, HealthProcedure
+from appointments.models import Appointment, Worker, HealthProcedure, Patient
 from datetime import date
 
 from appointments.forms import (
     RegisterAppointmentForm,
-    RegisterHealthProcedureForm
+    RegisterHealthProcedureForm,
+    RegisterPatientForm
 )
 
 EMAIL_KEY = "email"
@@ -160,6 +161,16 @@ def register_health_procedures(request):
 
 @login_required(login_url='/login')
 def register_patient(request):
-    return render(request, "register_patient.html", {
+    context = {}
+    if request.method == "POST":
+        form = RegisterPatientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context["success"] = "Paciente registrado exitosamente."
+            return render(request, "register_patient.html", context)
+    else:
+        form = RegisterPatientForm()
 
+    return render(request, "register_patient.html", {
+        'form': form
     })
