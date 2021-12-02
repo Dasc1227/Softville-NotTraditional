@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+import re
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
@@ -26,6 +28,7 @@ class RegisterAppointmentForm(forms.ModelForm):
             'attended_by': _('Doctor'),
             'patient_id': _('Paciente'),
         }
+
     field_order = ['date', 'time', 'attended_by', 'patient_id']
 
     def clean(self):
@@ -65,7 +68,6 @@ class RegisterAppointmentForm(forms.ModelForm):
 
 
 class RegisterHealthProcedureForm(forms.ModelForm):
-
     class Meta:
         model = HealthProcedure
         exclude = ['creation_date']
@@ -75,7 +77,7 @@ class RegisterHealthProcedureForm(forms.ModelForm):
             'details': _('Detalles'),
         }
         widgets = {
-            'details': forms.Textarea(attrs={'cols': 80, 'rows': 20})
+            'details': forms.Textarea(attrs={'cols': 40, 'rows': 10})
         }
 
 
@@ -89,4 +91,18 @@ class RegisterPatientForm(forms.ModelForm):
             'last_name': _('Apellidos'),
             'email': _('Correo'),
         }
+        widgets = {
+            'id_number': forms.TextInput(attrs={'pattern': '[1-9]-?\d{4}-?\d{4}'})
+        }
         field_order = ['id_number', 'name', 'last_name', 'email']
+
+    def clean(self):
+        super(RegisterPatientForm, self).clean()
+        if len(self.cleaned_data) == 4:
+            id_number = self.cleaned_data['id_number']
+            ID_PATTERN = '^[1-9]-?\d{4}-?\d{4}$'
+            regex = re.compile(ID_PATTERN)
+            if not regex.search(id_number):
+                msg = u"La cédula es inválida."
+                self.add_error('id_number', msg)
+        return self.cleaned_data

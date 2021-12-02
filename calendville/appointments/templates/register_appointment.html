@@ -3,6 +3,13 @@
 {% block title %} Registrar cita {% endblock %}
 
 {% block content %}
+
+{% if success %}
+    <div class="alert alert-success" role="alert">
+      {{success}}
+    </div>
+{% endif %}
+
 <div class="form-small">
   <div class="card">
     <div class="card-body">
