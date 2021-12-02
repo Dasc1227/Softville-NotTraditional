@@ -2,8 +2,12 @@ from datetime import datetime, timedelta
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from appointments.models import Appointment, HealthProcedure
-from appointments.models import Patient
+from appointments.models import (
+    Appointment,
+    HealthProcedure,
+    Patient,
+    Worker,
+)
 
 
 class RegisterAppointmentForm(forms.ModelForm):
@@ -90,3 +94,40 @@ class RegisterPatientForm(forms.ModelForm):
             'email': _('Correo'),
         }
         field_order = ['id_number', 'name', 'last_name', 'email']
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(
+        label="Correo", max_length=254, required=True,
+        widget=forms.EmailInput(attrs={
+            "class": "form-control",
+            "id": "email"
+        })
+    )
+    password = forms.CharField(
+        label="Contraseña", required=True,
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control",
+            "id": "password"
+        })
+    )
+    next = forms.CharField(
+        widget=forms.HiddenInput(attrs={"id": "next"}),
+        required=False
+    )
+
+    def clean(self):
+        super(LoginForm, self).clean()
+        if len(self.cleaned_data) < 2:
+            return
+
+        email = self.cleaned_data["email"]
+        user_entry = Worker.objects.filter(email=email)
+        if not user_entry.exists():
+            error = u"El correo no existe en el sistema"
+            self.add_error("email", error)
+
+        next = self.cleaned_data["next"]
+        if len(next) > 0 and not next.startswith("/"):
+            error = u"No es posible redireccionar a sitios externos"
+            self.add_error("next", error)
