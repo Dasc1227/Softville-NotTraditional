@@ -67,10 +67,10 @@ class RegisterAppointmentForm(forms.ModelForm):
                     and appointment_datetime.time() < datetime.now().time():
                 msg = u"¡Hora inválida!"
                 self.add_error('time', msg)
-            if time(9, 0, 0) > appointment_datetime.time() or \
-                    appointment_datetime.time() > time(22, 0, 0):
+            if time(11, 0, 0) > appointment_datetime.time() or \
+                    appointment_datetime.time() > time(21, 0, 0):
                 msg = u"Las horas de cita solo " \
-                      u"pueden ser entre las 9:00 y 23:00."
+                      u"pueden ser entre las 11:00 y 21:00."
                 self.add_error('time', msg)
         return self.cleaned_data
 
