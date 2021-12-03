@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from appointments.models import Appointment, Worker, Patient
+from appointments.models import Worker, Patient
 
 LIST_APPOINTMENTS_PATH = "/appointments"
 
@@ -86,7 +86,9 @@ class TestListIntegrity:
             "attended_by": self.worker_1.pk,
             "patient_id": self.patient_1.pk,
         }
-        self.client.post(self.REGISTER_URL, self.valid_appointment, follow=True)
+        self.client.post(self.REGISTER_URL,
+                         self.valid_appointment,
+                         follow=True)
 
     def test_weekday_cards_visible(self, setup, browser_in_list):
         driver, user, server = browser_in_list()
@@ -96,4 +98,3 @@ class TestListIntegrity:
     def test_appointment_visible(self, setup, browser_in_list, field):
         driver, user, server = browser_in_list()
         assert driver.find_element_by_id(field)
-
