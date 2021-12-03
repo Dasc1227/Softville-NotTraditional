@@ -107,7 +107,9 @@ class RegisterPatientForm(forms.ModelForm):
             'email': _('Correo'),
         }
         widgets = {
-            'id_number': forms.TextInput(attrs={'pattern': '[1-9]-?\d{4}-?\d{4}'})
+            'id_number': forms.TextInput(attrs={
+                'pattern': r'[1-9]-?\d{4}-?\d{4}'
+            })
         }
         field_order = ['id_number', 'name', 'last_name', 'email']
 
@@ -115,7 +117,7 @@ class RegisterPatientForm(forms.ModelForm):
         super(RegisterPatientForm, self).clean()
         if len(self.cleaned_data) == 4:
             id_number = self.cleaned_data['id_number']
-            ID_PATTERN = '^[1-9]-?\d{4}-?\d{4}$'
+            ID_PATTERN = r'^[1-9]-?\d{4}-?\d{4}$'
             regex = re.compile(ID_PATTERN)
             if not regex.search(id_number):
                 msg = u"La cédula es inválida."
