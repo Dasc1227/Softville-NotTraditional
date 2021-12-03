@@ -1,6 +1,6 @@
 
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django import forms
 from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
