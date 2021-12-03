@@ -3,18 +3,27 @@
 {% block title %} Registrar procedimiento de salud {% endblock %}
 
 {% block content %}
-        <div class="row">
-            <h2>Registrar procedimiento de salud</h2>
+
+{% if success %}
+    <div class="alert alert-success" role="alert">
+      {{success}}
+    </div>
+{% endif %}
+
+<div class="form-small">
+  <div class="card">
+    <div class="card-body">
+      <h1>Registrar Procedimiento de Salud</h1>
+      <hr/>
+      <form id="form_register_appointment" action="{% url 'register_procedure' %}" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="d-grid gap-2">
+          <button name="submit_button" type="submit" class="btn btn-primary btn-lg">Registrar</button>
         </div>
-        <hr>
-        <form id="form_register_appointment" action="{% url 'register_procedure' %}" method="post">
-            {% csrf_token %}
-            {{form.as_p}}
-            <div class="row item-group">
-                <div class="col-sm-3">
-                    <button type="submit" class="btn btn-primary btn-lg">Registrar</button>
-                </div>
-            </div>
-        </form>
+      </form>
+    </div>
+  </div>
+</div>
     
 {% endblock %}

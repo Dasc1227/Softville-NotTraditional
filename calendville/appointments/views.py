@@ -3,7 +3,7 @@ from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from datetime import timedelta
@@ -16,7 +16,8 @@ from datetime import date
 from appointments.forms import (
     LoginForm,
     RegisterAppointmentForm,
-    RegisterHealthProcedureForm
+    RegisterHealthProcedureForm,
+    RegisterPatientForm
 )
 
 EMAIL_KEY = "email"
@@ -86,6 +87,7 @@ def logout_view(request):
 
 @login_required(login_url='/login')
 def register_appointment(request):
+    context = {}
     if request.method == "POST":
         form = RegisterAppointmentForm(request.POST)
         if form.is_valid():
@@ -101,13 +103,15 @@ def register_appointment(request):
                 start_time=make_aware(datetime.combine(appointment_date,
                                                        appointment_time))
             )
+            context["success"] = "Cita registrada exitosamente."
+            context["form"] = RegisterAppointmentForm()
             appointment.save()
+        else:
+            context["form"] = form
     else:
-        form = RegisterAppointmentForm()
+        context["form"] = RegisterAppointmentForm()
 
-    return render(request, "register_appointment.html", {
-        'form': form
-    })
+    return render(request, "register_appointment.html", context)
 
 
 @login_required(login_url='/login')
@@ -148,20 +152,33 @@ def list_health_procedures(request):
 
 @login_required(login_url='/login')
 def register_health_procedures(request):
+    context = {}
     if request.method == "POST":
         form = RegisterHealthProcedureForm(request.POST)
         if form.is_valid():
+            context["success"] = "Procedimiento de salud creado exitosamente."
+            context["form"] = RegisterHealthProcedureForm()
             form.save()
+        else:
+            context["form"] = form
     else:
-        form = RegisterHealthProcedureForm()
+        context["form"] = RegisterHealthProcedureForm()
 
-    return render(request, "register_health_procedure.html", {
-        'form': form
-    })
+    return render(request, "register_health_procedure.html", context)
 
 
 @login_required(login_url='/login')
 def register_patient(request):
-    return render(request, "register_patient.html", {
+    context = {}
+    if request.method == "POST":
+        form = RegisterPatientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            context["success"] = "Paciente registrado exitosamente."
+            context["form"] = RegisterPatientForm()
+        else:
+            context["form"] = form
+    else:
+        context["form"] = RegisterPatientForm()
 
-    })
+    return render(request, "register_patient.html", context)
