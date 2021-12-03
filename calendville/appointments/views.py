@@ -8,6 +8,8 @@ from django.urls import reverse
 
 from datetime import timedelta
 
+from django.utils.timezone import make_aware
+
 from appointments.models import Appointment, Worker, HealthProcedure
 from datetime import date
 
@@ -96,8 +98,8 @@ def register_appointment(request):
                 registered_by=secretary,
                 attended_by=doctor,
                 patient_id=patient,
-                start_time=datetime.combine(appointment_date,
-                                            appointment_time)
+                start_time=make_aware(datetime.combine(appointment_date,
+                                                       appointment_time))
             )
             appointment.save()
     else:
