@@ -1,8 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 import pytest
 
-from appointments.models import Worker, Patient
+from appointments.models import Worker, Patient, Appointment
 
 LIST_APPOINTMENTS_PATH = "/appointments"
 
@@ -14,6 +14,7 @@ def browser_in_list(logged_firefox):
     def move_to_list():
         driver.get(str(server) + LIST_APPOINTMENTS_PATH)
         return driver, user, server
+
     return move_to_list
 
 
@@ -32,7 +33,6 @@ class TestNavigation:
 
 
 class TestListIntegrity:
-
     REGISTER_URL = "/register_appointment"
 
     APPOINTMENT_FIELDS = [
@@ -82,13 +82,15 @@ class TestListIntegrity:
 
         self.valid_appointment = {
             "date": (datetime.now() + timedelta(days=1)).strftime("%x"),
-            "time": datetime.now().strftime("%X"),
+            "time": datetime.combine(
+                datetime.now(), time(12, 0, 0)).strftime("%X"),
             "attended_by": self.worker_1.pk,
             "patient_id": self.patient_1.pk,
         }
-        self.client.post(self.REGISTER_URL,
-                         self.valid_appointment,
-                         follow=True)
+        self.response = self.client.post(self.REGISTER_URL,
+                                         self.valid_appointment,
+                                         follow=True)
+        self.appointment = Appointment.objects.first()
 
     def test_weekday_cards_visible(self, setup, browser_in_list):
         driver, user, server = browser_in_list()
@@ -97,4 +99,4 @@ class TestListIntegrity:
     @pytest.mark.parametrize("field", APPOINTMENT_FIELDS)
     def test_appointment_visible(self, setup, browser_in_list, field):
         driver, user, server = browser_in_list()
-        assert driver.find_element_by_id(field)
+        assert driver.find_element_by_id(f"{field}{self.appointment.id}")

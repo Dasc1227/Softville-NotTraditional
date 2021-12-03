@@ -21,18 +21,18 @@
       {% else %}
         {% for appointment in appointments_day.appointments %}
           <div class="card-body border-bottom">
-            <h5 id="patient-name" class="card-title">
+            <h5 id="patient-name{{appointment.id}}" class="card-title">
               <strong>Paciente: </strong>
               {{appointment.patient_id.name}} {{appointment.patient_id.last_name}}
             </h5>
             <div class="row">
-              <div id="appointment-date" class="col-md-4">
+              <div id="appointment-date{{appointment.id}}" class="col-md-4">
                 <strong>Fecha: </strong><span>{{ appointment.start_time }}</span>
               </div>
-              <div id="appointment-doctor" class="col-md-4">
+              <div id="appointment-doctor{{appointment.id}}" class="col-md-4">
                 <strong>Profesional: </strong><span>{{appointment.attended_by.first_name}} {{appointment.attended_by.last_name}}</span>
               </div>
-              <div id="appointment-secretary" class="col-md-4">
+              <div id="appointment-secretary{{appointment.id}}" class="col-md-4">
                 <strong>Registrada por: </strong><span>{{appointment.registered_by.first_name}} {{appointment.registered_by.last_name}}</span>
               </div>
             </div>
