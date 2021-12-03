@@ -1,5 +1,8 @@
-from datetime import datetime, timedelta
+
+import re
+from datetime import datetime, timedelta, time
 from django import forms
+from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 
 from appointments.models import (
@@ -35,13 +38,18 @@ class RegisterAppointmentForm(forms.ModelForm):
     def clean(self):
         super(RegisterAppointmentForm, self).clean()
         if len(self.cleaned_data) == 4:
-            date = self.cleaned_data['date']
-            time = self.cleaned_data['time']
+            appointment_date = self.cleaned_data['date']
+            appointment_time = self.cleaned_data['time']
             doctor = self.cleaned_data['attended_by']
             patient = self.cleaned_data['patient_id']
-            appointment_datetime = datetime.combine(date, time)
-            prev_appointment = appointment_datetime - timedelta(minutes=59)
-            future_appointment = appointment_datetime + timedelta(minutes=59)
+            appointment_datetime = datetime.combine(appointment_date,
+                                                    appointment_time)
+            prev_appointment = make_aware(
+                appointment_datetime - timedelta(minutes=59)
+            )
+            future_appointment = make_aware(
+                appointment_datetime + timedelta(minutes=59)
+            )
             overlapped_doctor_appointment = Appointment.objects.filter(
                 attended_by=doctor,
                 start_time__range=(prev_appointment,
@@ -65,6 +73,11 @@ class RegisterAppointmentForm(forms.ModelForm):
                     and appointment_datetime.time() < datetime.now().time():
                 msg = u"¡Hora inválida!"
                 self.add_error('time', msg)
+            if time(11, 0, 0) > appointment_datetime.time() or \
+                    appointment_datetime.time() > time(21, 0, 0):
+                msg = u"Las horas de cita solo " \
+                      u"pueden ser entre las 11:00 y 21:00."
+                self.add_error('time', msg)
         return self.cleaned_data
 
 
@@ -79,7 +92,7 @@ class RegisterHealthProcedureForm(forms.ModelForm):
             'details': _('Detalles'),
         }
         widgets = {
-            'details': forms.Textarea(attrs={'cols': 80, 'rows': 20})
+            'details': forms.Textarea(attrs={'cols': 40, 'rows': 10})
         }
 
 
@@ -93,7 +106,23 @@ class RegisterPatientForm(forms.ModelForm):
             'last_name': _('Apellidos'),
             'email': _('Correo'),
         }
+        widgets = {
+            'id_number': forms.TextInput(attrs={
+                'pattern': r'[1-9]-?\d{4}-?\d{4}'
+            })
+        }
         field_order = ['id_number', 'name', 'last_name', 'email']
+
+    def clean(self):
+        super(RegisterPatientForm, self).clean()
+        if len(self.cleaned_data) == 4:
+            id_number = self.cleaned_data['id_number']
+            ID_PATTERN = r'^[1-9]-?\d{4}-?\d{4}$'
+            regex = re.compile(ID_PATTERN)
+            if not regex.search(id_number):
+                msg = u"La cédula es inválida."
+                self.add_error('id_number', msg)
+        return self.cleaned_data
 
 
 class LoginForm(forms.Form):

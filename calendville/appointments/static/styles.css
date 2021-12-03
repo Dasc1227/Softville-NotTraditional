@@ -18,3 +18,14 @@
     font-family: Inter;
     font-size: 25px;
 }
+
+.alert {
+  left: 0;
+  margin: auto; // Centers alert component
+  position: absolute; // So that it will display relative to the entire page
+  right: 0;
+  text-align: center;
+  top: 1em;
+  width: 40%;
+  z-index: 1; // Displays over app and bootstrap Navbar
+}

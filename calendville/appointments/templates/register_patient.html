@@ -1,1 +1,28 @@
-<p>!Add Form here<p>
+{% extends "layout.html" %}
+
+{% block title %} Registrar paciente {% endblock %}
+
+{% block content %}
+<div class="form-small">
+
+  {% if success %}
+    <div class="alert alert-success" role="alert">
+      Paciente registrado exitosamente.
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-body">
+      <h1>Registrar paciente</h1>
+      <hr/>
+      <form id="form_register_patient" action="{% url 'register_patient' %}" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="d-grid gap-2">
+          <button name="submit_button" type="submit" class="btn btn-primary btn-lg">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>  
+</div>
+{% endblock %}
