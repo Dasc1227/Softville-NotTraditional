@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 import pytest
 
 from appointments.models import Patient, Worker, Appointment
@@ -116,19 +116,19 @@ class TestRegisterAppointments:
 
     def test_valid_appointment(self, setup):
         appointment_date = date.today() + timedelta(days=1)
-        appointment_time = datetime.now()
+        appointment_time = datetime.combine(appointment_date, time(12, 0, 0))
         valid_appointment = self.get_appointment(appointment_date,
                                                  appointment_time,
                                                  self.worker_1,
                                                  self.patient_1)
         self.client.post(self.REGISTER_URL, valid_appointment, follow=True)
-        assert Appointment.objects.last().start_time, \
-            datetime.combine(appointment_date,
-                             appointment_time.time())
+        appointment_datetime = Appointment.objects.last().start_time
+        assert appointment_datetime, datetime.combine(appointment_date,
+                                                      appointment_time.time())
 
     def test_past_date_appointment(self, setup):
         appointment_date = date.today() - timedelta(days=1)
-        appointment_time = datetime.now()
+        appointment_time = datetime.combine(appointment_date, time(12, 0, 0))
         past_date_appointment = self.get_appointment(appointment_date,
                                                      appointment_time,
                                                      self.worker_1,
@@ -157,7 +157,7 @@ class TestRegisterAppointments:
 
     def test_overlapped_appointment_for_doctor(self, setup):
         appointment_date = date.today() + timedelta(days=1)
-        appointment_time = datetime.now()
+        appointment_time = datetime.combine(appointment_date, time(12, 0, 0))
         overlapped_time = appointment_time + timedelta(minutes=59)
         appointment = self.get_appointment(appointment_date,
                                            appointment_time,
@@ -175,7 +175,7 @@ class TestRegisterAppointments:
 
     def test_overlapped_appointment_for_patient(self, setup):
         appointment_date = date.today() + timedelta(days=1)
-        appointment_time = datetime.now()
+        appointment_time = datetime.combine(appointment_date, time(12, 0, 0))
         overlapped_time = appointment_time + timedelta(minutes=59)
         appointment = self.get_appointment(appointment_date,
                                            appointment_time,
@@ -191,3 +191,15 @@ class TestRegisterAppointments:
                                     overlapped_appointment,
                                     follow=True)
         assert "patient_id" in response.context['form'].errors
+
+    def test_no_work_hours_appointment(self, setup):
+        appointment_date = date.today()
+        appointment_time = datetime.combine(appointment_date, time(8, 0, 0))
+        no_work_hour_appointment = self.get_appointment(appointment_date,
+                                                        appointment_time,
+                                                        self.worker_1,
+                                                        self.patient_1)
+        response = self.client.post(self.REGISTER_URL,
+                                    no_work_hour_appointment,
+                                    follow=True)
+        assert "time" in response.context['form'].errors

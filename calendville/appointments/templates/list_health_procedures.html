@@ -4,10 +4,14 @@
 
 <div>
     <form action="{% url 'health_procedures' %}" method="GET">
-      <input type="text" name="q" placeholder="Nombre o apellido">
-      <input type="submit" class="btn btn-primary btn-lg" value="Buscar paciente">
+        <div class="input-group mb-3">
+            <input type="text" id="query-input" name="q" class="form-control" placeholder="Nombre o apellido">
+            <input type="submit" id="submit-button" class="btn btn-primary btn-lg" value="Buscar paciente">
+        </div>
     </form>
-    <a class="btn btn-primary btn-lg" href="{% url 'register_procedure' %}">+ Crear</a>
+    <div class="d-grid gap-2 mb-3">
+        <a class="btn btn-primary btn-lg" href="{% url 'register_procedure' %}">+ Crear procedimiento</a>
+    </div>
 
     {% if not health_procedures %}
         <h1 style="text-align: center">No hay procedimientos</h1>

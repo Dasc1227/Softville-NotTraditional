@@ -8,10 +8,13 @@ from django.urls import reverse
 
 from datetime import timedelta
 
-from appointments.models import Appointment, Worker, HealthProcedure, Patient
+from django.utils.timezone import make_aware
+
+from appointments.models import Appointment, Worker, HealthProcedure
 from datetime import date
 
 from appointments.forms import (
+    LoginForm,
     RegisterAppointmentForm,
     RegisterHealthProcedureForm,
     RegisterPatientForm
@@ -19,6 +22,7 @@ from appointments.forms import (
 
 EMAIL_KEY = "email"
 PASSWORD_KEY = "password"
+NEXT_KEY = "next"
 
 
 @login_required(login_url='/login')
@@ -27,54 +31,52 @@ def index(request):
 
 
 def login_view(request):
-    context = {}
-    if request.method == "POST":
-
-        if not (EMAIL_KEY in request.POST and
-                PASSWORD_KEY in request.POST):
-            context["error"] = "Datos inválidos"
-            return render(request, "login.html", context)
-
-        email = request.POST["email"]
-        password = request.POST["password"]
-
-        user_entry = Worker.objects.filter(email=email)
-
-        # User exists
-        if user_entry.exists():
-            # Attempt to sign user in
-            user = authenticate(request, username=email, password=password)
-            if user is not None:
-                user.password_attempts = 0
-                user.save()
-                login(request, user)
-                next_url = request.POST.get("next")
-                if next_url:
-                    return HttpResponseRedirect(next_url)
-                else:
-                    return HttpResponseRedirect(reverse("index"))
-            else:
-                user = user_entry[0]
-                context["error"] = "Contraseña inválida."
-                user.password_attempts += 1
-
-                # Check if user is blocked
-                if user.password_attempts >= 5:
-                    user.is_active = False
-
-                user.save()
-
-                context["user_blocked"] = user.is_active
-                context["login_attempts"] = 5 - user.password_attempts
-        else:
-            context["error"] = "El correo no existe en el sistema"
-
-        return render(request, "login.html", context)
-    elif request.user.is_anonymous:
-        return render(request, "login.html")
-    else:
-        # GET and user is logged in
+    if request.method == "GET" and not request.user.is_anonymous:
         return HttpResponseRedirect(reverse("index"))
+
+    if request.method == "GET" and request.user.is_anonymous:
+        form = LoginForm()
+        if NEXT_KEY in request.GET:
+            form.fields[NEXT_KEY].initial = request.GET[NEXT_KEY]
+        return render(request, "login.html", {"form": form})
+
+    # else, POST
+    form = LoginForm(request.POST)
+    context = {"form": form}
+    if not form.is_valid():
+        return render(request, "login.html", context)
+
+    email = form.cleaned_data["email"]
+    password = form.cleaned_data["password"]
+
+    # Attempt to sign user in
+    user = authenticate(request, username=email, password=password)
+    if user is not None:
+        user.password_attempts = 0
+        user.save()
+        login(request, user)
+        next = form.cleaned_data[NEXT_KEY]
+        if next:
+            return HttpResponseRedirect(next)
+        else:
+            return HttpResponseRedirect(reverse("index"))
+    else:
+        # Check if user is blocked
+        user = Worker.objects.get(email=email)
+        if user.password_attempts < 5:
+            user.password_attempts += 1
+
+        if user.password_attempts >= 5:
+            form.add_error("email", u"Usuario bloqueado")
+            user.is_active = False
+        else:
+            form.add_error("password", u"Contraseña inválida")
+
+        user.save()
+
+        context["login_attempts"] = 5 - user.password_attempts
+
+    return render(request, "login.html", context)
 
 
 @login_required(login_url='/login')
@@ -98,8 +100,8 @@ def register_appointment(request):
                 registered_by=secretary,
                 attended_by=doctor,
                 patient_id=patient,
-                start_time=datetime.combine(appointment_date,
-                                            appointment_time)
+                start_time=make_aware(datetime.combine(appointment_date,
+                                                       appointment_time))
             )
             context["success"] = "Cita registrada exitosamente."
             context["form"] = RegisterAppointmentForm()

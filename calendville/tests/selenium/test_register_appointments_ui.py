@@ -39,8 +39,6 @@ class TestFormIntegrity:
         "submit_button"
     ]
 
-    REQUIRED_FIELDS = []
-
     def get_required_fields(fields_list):
         fields = fields_list.copy()
         fields.remove("csrfmiddlewaretoken")
